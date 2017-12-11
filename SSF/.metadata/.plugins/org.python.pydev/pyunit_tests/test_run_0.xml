@@ -13,8 +13,8 @@ ERROR: Module: generate-mongoDB could not be imported (file: D:\Project\GitHub\r
 ]]></stderr>
 </test>
 <launch mode="run">
-<launch_memento><![CDATA[<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<launchConfiguration local="true" path="movie-recommendation generate-mongoDB.py (1)"/>
+<launch_memento><![CDATA[<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<launchConfiguration local="true" path="movie-recommendation generate-mongoDB.py (1)"/>
 ]]></launch_memento>
 </launch>
 </pydev-testsuite>

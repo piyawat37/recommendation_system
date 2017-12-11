@@ -1,0 +1,49 @@
+'''
+Created on Dec 11, 2017
+
+@author: Piyawat Pemwattana
+'''
+
+import csv
+import json
+import os
+import pandas as pd
+import sys, getopt, pprint
+from pymongo import MongoClient
+
+BASEDIR = os.path.dirname(os.path.realpath(__file__))
+
+csvList = ["movies.csv", "ratings.csv", "links.csv", "tags.csv"]
+
+
+
+mongo_client=MongoClient() 
+db=mongo_client.recommendation_system
+reader = {}
+
+#CSV to JSON Conversion
+for csvFile in csvList:
+    csv_file = open(BASEDIR+'\\csv-file\\movies.csv', 'r', encoding="utf8")
+    reader = csv.DictReader(csv_file)
+    if csvFile is "movies.csv":
+        db.movies.drop()
+        header= [ "movieId", "title", "genres"]
+    elif csvFile is "ratings.csv":
+        db.ratings.drop()
+        header= [ "userId", "movieId", "rating", "timestamp"]
+    readerCSV(csv_file)
+
+
+ 
+def readerCSV(csv_file):
+    for each in reader:
+        row={}
+        for field in header:
+            row[field]=each[field]
+        if csv_file is "movies.csv":
+            db.movies.insert(row)
+        elif csv_file is "ratings.csv":
+            db.ratings.insert(row)
+
+
+print("success!!")

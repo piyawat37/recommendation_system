@@ -26,6 +26,7 @@
 pip install flask
 pip install flask-cors
 pip install pymongo
+pip install pandas
 
 
 ## Node [node_module]

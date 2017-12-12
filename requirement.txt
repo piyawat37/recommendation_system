@@ -5,6 +5,9 @@ pip install flask-cors
 pip install pymongo
 
 
-## Node
+## Node [node_module]
 in frontend
 npm install
+
+**WARNING**
+npm config set proxy "http://lpn.mfec.co.th:8080"

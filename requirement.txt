@@ -33,4 +33,6 @@ in frontend
 npm install
 
 **WARNING**
-npm config set proxy "http://lpn.mfec.co.th:8080"
+npm config set proxy "http://server:port"
+	--- OR ---
+npm config set proxy "https://server:port"

@@ -3,3 +3,8 @@
 pip install flask
 pip install flask-cors
 pip install pymongo
+
+
+## Node
+in frontend
+npm install

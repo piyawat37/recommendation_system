@@ -1,0 +1,53 @@
+'''
+Created on Dec 11, 2017
+
+@author: Piyawat Pemwattana
+'''
+
+from random import randint
+from flask import Flask, render_template, jsonify
+from flask_cors.extension import CORS
+from pymongo import MongoClient # Database connector
+import pandas
+
+app = Flask(__name__,
+            static_folder = "./dist/static",
+            template_folder = "./dist")
+cors = CORS(app, resources={r"/api/*": {"origins": "*"}})
+
+client = MongoClient('localhost', 27017)
+db = client.recommendation_system
+
+def get_all_object():
+    movie_obj = db.movies.find()
+    rating_obj = db.ratings.find()
+    return movie_obj, rating_obj
+
+movie_obj, rating_obj = get_all_object()
+
+ratingsDataFrame = pandas.DataFrame(list(rating_obj));
+
+for index, val in enumerate(movie_obj):
+    if len(val) > 3:
+        moviesList[index] = [val[0], ','.join(val[1:len(val) - 1]), val[-1]] 
+
+moviesDataFrame = pandas.DataFrame(list(movie_obj));
+
+@app.route('/api/random')
+def random_number(): 
+    response = {
+        'randomNumber': randint(1,10)
+    }
+    return jsonify(response)
+
+
+@app.route('/', defaults={'path': ''})
+@app.route('/<path:path>')
+def catch_all(path):
+    return render_template("index.html")
+
+
+
+
+    
+app.run();

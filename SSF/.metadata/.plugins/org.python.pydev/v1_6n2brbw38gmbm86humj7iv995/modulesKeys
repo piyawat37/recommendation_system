@@ -609,6 +609,8 @@ flask_cors.core|C:\Users\Piyawat Pemwattana\AppData\Local\Programs\Python\Python
 flask_cors.decorator|C:\Users\Piyawat Pemwattana\AppData\Local\Programs\Python\Python36-32\lib\site-packages\flask_cors\decorator.py
 flask_cors.extension|C:\Users\Piyawat Pemwattana\AppData\Local\Programs\Python\Python36-32\lib\site-packages\flask_cors\extension.py
 flask_cors.version|C:\Users\Piyawat Pemwattana\AppData\Local\Programs\Python\Python36-32\lib\site-packages\flask_cors\version.py
+flask_pymongo.__init__|C:\Users\Piyawat Pemwattana\AppData\Local\Programs\Python\Python36-32\lib\site-packages\flask_pymongo\__init__.py
+flask_pymongo.wrappers|C:\Users\Piyawat Pemwattana\AppData\Local\Programs\Python\Python36-32\lib\site-packages\flask_pymongo\wrappers.py
 fnmatch|C:\Users\Piyawat Pemwattana\AppData\Local\Programs\Python\Python36-32\lib\fnmatch.py
 formatter|C:\Users\Piyawat Pemwattana\AppData\Local\Programs\Python\Python36-32\lib\formatter.py
 fractions|C:\Users\Piyawat Pemwattana\AppData\Local\Programs\Python\Python36-32\lib\fractions.py

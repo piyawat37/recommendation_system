@@ -1,18 +1,32 @@
 -- VERSION_4
 -- START DISKCACHE_2
 D:\Project\GitHub\recommendation_system\SSF\.metadata\.plugins\org.eclipse.core.resources\.projects\movie-recommendation\com.python.pydev.analysis\v2_indexcache
-run|1512970990057914000|D:\Project\GitHub\recommendation_system\SSF\movie-recommendation\src\run.py
 -- END DISKCACHE
 -- START DICTIONARY
-1
-1=run
+0
 -- END DICTIONARY
 -- START TREE 1
-4
-app|1|app!11@
-cat|1|catch_all!10@
-cor|1|cors!11@
-ran|1|random_number!10@
+20
+K|0|
+M|0|
+N|0|
+P|0|
+Q|0|
+R|0|
+app|0|
+cat|0|
+cli|0|
+cor|0|
+db|0|
+df|0|
+get|0|
+joi|0|
+mat|0|
+mov|0|
+nR|0|
+ran|0|
+rat|0|
+res|0|
 -- END TREE
 -- START TREE 2
 0

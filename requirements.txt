@@ -1,0 +1,39 @@
+# Develop Tools
+- Mongo Community
+- Text Editor
+	- ATOM Sync VueTemplates
+	- PyCharm Community [Not Support CSS and JavaScript {WebDev}]
+   -----OR-----
+- IDE
+	- Eclipse Oxygen Sync Pydev and Vue Templates
+
+# Framework and Technology
+- Python 3.6
+- MongoDB
+- PyDev
+- Vue.js
+- Cors
+- Axios
+- Flask
+- Flask-cors
+- Jinja2
+- Click
+- itsdangerous
+- Werkzeug
+
+# Command
+## Python
+pip install flask
+pip install flask-cors
+pip install pymongo
+pip install pandas
+
+
+## Node [node_module]
+in frontend
+npm install
+
+**WARNING**
+npm config set proxy "http://server:port"
+	--- OR ---
+npm config set proxy "https://server:port"

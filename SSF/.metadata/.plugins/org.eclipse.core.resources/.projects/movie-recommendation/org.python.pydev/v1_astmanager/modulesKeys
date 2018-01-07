@@ -1,2 +1,4 @@
 MODULES_MANAGER_V2
+absPath|D:\Project\GitHub\recommendation_system\SSF\movie-recommendation\src\common-service\absPath.py
+backend.PyUnitTest.mainTest|D:\Project\GitHub\recommendation_system\SSF\movie-recommendation\src\backend\PyUnitTest\mainTest.py
 run|D:\Project\GitHub\recommendation_system\SSF\movie-recommendation\src\run.py

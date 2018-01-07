@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<?pydev-testrun version="1.0"?><pydev-testsuite>
+<summary errors="0" failures="0" finished="true" name="Test Run: 23" tests="5" total_time="Finished in: 0.01 secs."/>
+<test location="D:\Project\GitHub\recommendation_system\SSF\movie-recommendation\src\backend\PyUnitTest\mainTest.py" status="ok" test="Test.test_getMoviesSeen" time="0.00">
+<stdout><![CDATA[{'movieId': [], 1: [], 2: [], 3: [], 4: [], 5: [], 6: [], 7: [], 8: [], 9: [], 10: [], 11: [], 12: [], 13: [], 14: [], 15: [], 16: [], 17: [], 18: [], 19: [], 20: [], 21: [], 22: [], 23: [], 24: [], 25: [], 26: [], 27: [], 28: [], 29: [], 30: [], 31: [], 32: [], 34: [], 35: [], 36: [], 37: [], 38: [], 39: [], 40: [], 41: [], 42: [], 43: [], 44: [], 45: [], 46: [], 47: [], 48: [], 49: [], 50: [], 52: [], 53: [], 54: [], 55: [], 57: [], 58: [], 59: [], 60: [], 61: [], 62: [], 63: [], 64: [], 65: [], 66: [], 68: [], 69: [], 70: [], 71: [], 72: [], 73: [], 74: [], 76: [], 77: [], 78: [], 79: [], 80: [], 81: [], 82: [], 83: [], 84: [], 85: [], 86: [], 87: [], 88: [], 89: [], 92: [], 93: [], 94: [], 95: [], 96: [], 97: [], 98: [], 99: [], 100: []}
+]]></stdout>
+<stderr/>
+</test>
+<test location="D:\Project\GitHub\recommendation_system\SSF\movie-recommendation\src\backend\PyUnitTest\mainTest.py" status="ok" test="Test.test_isupper" time="0.00">
+<stdout/>
+<stderr/>
+</test>
+<test location="D:\Project\GitHub\recommendation_system\SSF\movie-recommendation\src\backend\PyUnitTest\mainTest.py" status="ok" test="Test.test_readUsersTest" time="0.01">
+<stdout/>
+<stderr/>
+</test>
+<test location="D:\Project\GitHub\recommendation_system\SSF\movie-recommendation\src\backend\PyUnitTest\mainTest.py" status="ok" test="Test.test_split" time="0.00">
+<stdout/>
+<stderr/>
+</test>
+<test location="D:\Project\GitHub\recommendation_system\SSF\movie-recommendation\src\backend\PyUnitTest\mainTest.py" status="ok" test="Test.test_upper" time="0.00">
+<stdout/>
+<stderr/>
+</test>
+<launch mode="run">
+<launch_memento><![CDATA[<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<launchConfiguration local="true" path="movie-recommendation mainTest.py (1)"/>
+]]></launch_memento>
+</launch>
+</pydev-testsuite>

@@ -1,0 +1,79 @@
+'''
+Created on Jan 6, 2018
+
+@author: Piyawat Pemwattana
+'''
+import unittest, csv, absPath
+import numpy as np
+from scipy.sparse import csr_matrix
+
+CSVFILE_DIR = absPath.csv_file_path()
+
+MAX_UID = 100
+MAX_PID = 100
+
+class Test(unittest.TestCase):
+
+    def readUrm(self):
+        urm = np.zeros(shape=(MAX_UID,MAX_PID), dtype=np.float32)
+        with open(CSVFILE_DIR + 'ratings.csv', 'rb', encoding="utf8") as trainFile:
+            urmReader = csv.reader(trainFile, delimiter=',')
+            for row in urmReader:
+                urm[int(row[0]), int(row[1])] = float(row[2])
+#                 print(row)
+            print (csr_matrix(urm, dtype=np.float32))
+            pass
+        
+    def getMoviesSeen(self):
+        moviesSeen = dict()
+        with open(CSVFILE_DIR + "movies_test.csv", 'rt') as trainFile:
+            urmReader = csv.reader(trainFile, delimiter=',')
+            for row in urmReader:
+                try:
+                    moviesSeen[int(row[0])] = list()
+                except:
+                    moviesSeen[row[0]] = list()
+#         for row in moviesSeen:
+#             print(row)
+        print(moviesSeen)
+        pass
+            
+    def readUsersTest(self):
+#         uTest = dict()
+#         with open(CSVFILE_DIR + "users.csv", 'rt') as testFile:
+#             testReader = csv.reader(testFile, delimiter=',')
+#             for row in testReader:
+#                 try:
+#                     uTest[int(row[0])] = list()
+#                 except:
+#                     uTest[(row[0])] = list()
+#         print(uTest)
+#         for row in uTest:
+#             print(row)
+#         print(uTest)
+        self.assertTrue('FOO'.isupper())
+#         pass
+            
+    def test_upper(self):
+        self.assertEqual('foo'.upper(), 'FOO')
+
+    def test_isupper(self):
+        self.assertTrue('FOO'.isupper())
+        self.assertFalse('Foo'.isupper())
+
+    def test_split(self):
+        s = 'hello world'
+        self.assertEqual(s.split(), ['hello', 'world'])
+        # check that s.split fails when the separator is not a string
+        with self.assertRaises(TypeError):
+            s.split(2)
+#     def testConvert(self):
+#         a = "15.1"
+#         print(a)
+#         pass
+
+if __name__ == "__main__":
+#     import sys;sys.argv = ['', 'Test.readUsersTest']
+#     import sys;sys.argv = ['', 'Test.getMoviesSeen']
+#     import sys;sys.argv = ['', 'Test.testConvert']
+    unittest.main()

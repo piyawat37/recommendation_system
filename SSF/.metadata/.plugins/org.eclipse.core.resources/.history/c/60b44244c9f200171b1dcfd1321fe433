@@ -1,0 +1,10 @@
+'''
+Created on Jan 6, 2018
+
+@author: Piyawat Pemwattana
+'''
+import os
+
+def absolute_path():
+    
+    return 'aa'

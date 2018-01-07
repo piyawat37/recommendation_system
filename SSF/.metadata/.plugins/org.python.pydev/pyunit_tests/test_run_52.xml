@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<?pydev-testrun version="1.0"?><pydev-testsuite>
+<summary errors="1" failures="0" finished="true" name="Test Run: 53" tests="1" total_time="Finished in: 0.01 secs."/>
+<test location="D:\Project\GitHub\recommendation_system\SSF\movie-recommendation\src\backend\PyUnitTest\mainTest.py" status="error" test="Test.test_readUrm" time="">
+<stdout/>
+<stderr><![CDATA[Traceback (most recent call last):
+  File "D:\Project\GitHub\recommendation_system\SSF\movie-recommendation\src\backend\PyUnitTest\mainTest.py", line 23, in test_readUrm
+    urm[int(row[0]), int(row[1])] = float(row[2])
+IndexError: index 27369 is out of bounds for axis 1 with size 14000
+]]></stderr>
+</test>
+<launch mode="run">
+<launch_memento><![CDATA[<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<launchConfiguration local="true" path="movie-recommendation mainTest.py (2)"/>
+]]></launch_memento>
+</launch>
+</pydev-testsuite>

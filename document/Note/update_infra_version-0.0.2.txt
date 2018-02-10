@@ -1,0 +1,31 @@
+﻿/**
+Update 10-02-2018 
+Note By Piyawat Pemwattana 
+**/
+
+#เอกสารสำหรับอาจารย์
+- Verify Document
+
+#เอกสารสำหรับทำเล่มจบ
+- Working Document
+
+#เอกสารบทที่ N
+Format [Topic(N)-ชื่อหัวข้อ-version-x.x.x]
+
+#รูปภาพ
+- _image
+
+#สำหรับนำเสนอ
+- _Presentation
+
+#เอกสารที่ใช้ร่วมกันในการทำเล่ม
+- Common Document
+
+#รูปภาพสำหรับทำงานด้านวิเคราะห์ระบบ (SA)
+- _image/image_for_document/SA
+
+**Remark
+- ทุกอย่างที่เป็นอ้างอิง จัดรวมเอาไว้เป็น Reference Document
+- อะไรก็ตามที่ จะ! ต้องมีการ แก้! ให้ใส่เลข version ทุกครั้งที่มีการแก้ไข และจะใช้ Save As เท่านั้น
+
+**IMPORTANT!! อัพเดทโปรเจคใหม่ทั้งหมด**

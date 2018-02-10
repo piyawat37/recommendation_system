@@ -28,6 +28,8 @@ pip install flask-cors
 pip install pymongo
 pip install pandas
 
+##setVueTemplate
+eclipse -> windows -> preferences -> general -> content type -> text -> HTML -> Add.. -> *.vue
 
 ## Node [node_module]
 in frontend

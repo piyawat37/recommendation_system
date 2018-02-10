@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<?pydev-testrun version="1.0"?><pydev-testsuite>
-<summary errors="0" failures="0" finished="true" name="Test Run: 38" tests="1" total_time="null"/>
-<launch mode="debug">
-<launch_memento><![CDATA[<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<launchConfiguration local="true" path="movie-recommendation mainTest.py (2)"/>
-]]></launch_memento>
-</launch>
-</pydev-testsuite>

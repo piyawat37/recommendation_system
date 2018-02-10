@@ -99,6 +99,8 @@ SSF/.metadata/
 .mypy_cache/
 SSF/movie-recommendation/.pydevproject
 SSF/movie-recommendation/src/dist/index.html
-SSF/movie-recommendation/src/dist/static/css
 SSF/movie-recommendation/src/frontend/package.json
 SSF/movie-recommendation/src/frontend/package-lock.json
+SSF/movie-recommendation/src/dist/static/js
+SSF/movie-recommendation/src/dist/static/css
+SSF/movie-recommendation/src/frontend/node_modules

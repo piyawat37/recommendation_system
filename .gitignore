@@ -83,6 +83,7 @@ env/
 venv/
 ENV/
 .metadata/
+SSF/.metadata/
 
 # Spyder project settings
 .spyderproject

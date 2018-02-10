@@ -9,8 +9,8 @@ from scipy.sparse import csr_matrix
 
 CSVFILE_DIR = absPath.csv_file_path()
 
-MAX_UID = 900
-MAX_PID = 190000
+MAX_UID = 671
+MAX_PID = 9066
 
 class Test(unittest.TestCase):
 

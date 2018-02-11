@@ -16,35 +16,35 @@ app = Flask(__name__,
             template_folder = "./dist")
 cors = CORS(app, resources={r"/api/*": {"origins": "*"}})
 
-client = MongoClient('localhost', 27017)
-db = client.recommendation_system
-
-def get_all_object():
-    movie_obj = db.movies.find()
-    rating_obj = db.ratings.find()
-    return movie_obj, rating_obj
-
-movie_obj, rating_obj = get_all_object()
-
-rating_obj = db.ratings.find({'userId': '1'})
-ratingsDataFrame = pandas.DataFrame(list(rating_obj), columns = ['userId', 'movieId', 'rating', 'timestamp'], dtype = int);
-ratingsDataFrame['userId'] = ratingsDataFrame['userId'].astype(int)
-ratingsDataFrame['movieId'] = ratingsDataFrame['movieId'].astype(int)
-# ratingsDataFrame['rating'] = ratingsDataFrame['rating'].astype(float)
-# ratingsDataFrame['rating'] = ratingsDataFrame['rating'].astype(int)
-ratingsDataFrame['rating'] = ratingsDataFrame['rating'].astype(numpy.float64)
-
-
-moviesDataFrame = pandas.DataFrame(list(movie_obj));
-moviesDataFrame['movieId'] = moviesDataFrame['movieId'].apply(pandas.to_numeric)
-
-print(ratingsDataFrame.head())
-
-joinDataFrame = ratingsDataFrame.pivot(index='userId', columns='movieId', values='rating').fillna(0)
-joinMatrix = joinDataFrame.as_matrix()
- 
-# print(moviesDataFrame.head(10))
-print(joinMatrix.shape)
+# client = MongoClient('localhost', 27017)
+# db = client.recommendation_system
+# 
+# def get_all_object():
+#     movie_obj = db.movies.find()
+#     rating_obj = db.ratings.find()
+#     return movie_obj, rating_obj
+# 
+# movie_obj, rating_obj = get_all_object()
+# 
+# rating_obj = db.ratings.find({'userId': '1'})
+# ratingsDataFrame = pandas.DataFrame(list(rating_obj), columns = ['userId', 'movieId', 'rating', 'timestamp'], dtype = int);
+# ratingsDataFrame['userId'] = ratingsDataFrame['userId'].astype(int)
+# ratingsDataFrame['movieId'] = ratingsDataFrame['movieId'].astype(int)
+# # ratingsDataFrame['rating'] = ratingsDataFrame['rating'].astype(float)
+# # ratingsDataFrame['rating'] = ratingsDataFrame['rating'].astype(int)
+# ratingsDataFrame['rating'] = ratingsDataFrame['rating'].astype(numpy.float64)
+# 
+# 
+# moviesDataFrame = pandas.DataFrame(list(movie_obj));
+# moviesDataFrame['movieId'] = moviesDataFrame['movieId'].apply(pandas.to_numeric)
+# 
+# print(ratingsDataFrame.head())
+# 
+# joinDataFrame = ratingsDataFrame.pivot(index='userId', columns='movieId', values='rating').fillna(0)
+# joinMatrix = joinDataFrame.as_matrix()
+#  
+# # print(moviesDataFrame.head(10))
+# print(joinMatrix.shape)
 
 @app.route('/api/random')
 def random_number(): 

@@ -8,39 +8,41 @@ import pandas as pd
 import numpy as np
 import absPath
 
-ratings_list = [i.strip().split(",") for i in open(absPath.csv_file_path() + '/ratings.csv', 'r').readlines()]
+ratings_list = [i.strip().split(",") for i in open(absPath.csv_file_path() + '/ratings_test.csv', 'r').readlines()]
 users_list = [i.strip().split(",") for i in open(absPath.csv_file_path() + '/users.csv', 'r').readlines()]
 movies_list = [i.strip().split(",") for i in open(absPath.csv_file_path() + '/movies.csv', 'r', encoding='utf8').readlines()]
 
 ratings_df = pd.DataFrame(ratings_list, columns = ['UserID', 'MovieID', 'Rating', 'Timestamp'], dtype = int)
+print(ratings_df.dtypes)
 for index, val in enumerate(movies_list):
     if len(val) > 3:
         movies_list[index] = [val[0], ','.join(val[1:len(val) - 1]), val[-1]]
 movies_df = pd.DataFrame(movies_list, columns = ['MovieID', 'Title', 'Genres'])
 movies_df.drop(movies_df.index[:1], inplace=True)
 movies_df['MovieID'] = movies_df['MovieID'].apply(pd.to_numeric)
-
+ratings_df['Rating'] = ratings_df['Rating'].apply(pd.to_numeric)
+    
+    
 print(movies_df.head())
 print(ratings_df.head())
-
 R_df = ratings_df.pivot(index = 'UserID', columns ='MovieID', values = 'Rating').fillna(0)
 print('R_df')
-print(R_df.head(5))
+print(R_df.head(10))
 
-R = R_df.values
+R = R_df.as_matrix()
 print(R)
 user_ratings_mean = np.mean(R, axis = 1)
 R_demeaned = R - user_ratings_mean.reshape(-1, 1)
 
 from scipy.sparse.linalg import svds
-U, sigma, Vt = svds(R_demeaned, k = 50)
+U, sigma, Vt = svds(R_demeaned, k = 2)
 
 sigma = np.diag(sigma)
 
 all_user_predicted_ratings = np.dot(np.dot(U, sigma), Vt) + user_ratings_mean.reshape(-1, 1)
 preds_df = pd.DataFrame(all_user_predicted_ratings, columns = R_df.columns)
 
-def recommend_movies(predictions_df, userID, movies_df, original_ratings_df, num_recommendations=5):
+def recommend_movies(predictions_df, userID, movies_df, original_ratings_df, num_recommendations=10):
     
     # Get and sort the user's predictions
     user_row_number = userID - 1 # UserID starts at 1, not 0
@@ -66,3 +68,6 @@ def recommend_movies(predictions_df, userID, movies_df, original_ratings_df, num
                       )
 
     return user_full, recommendations
+already_rated, predictions = recommend_movies(preds_df, 5, movies_df, ratings_df)
+
+print(already_rated.head(10))

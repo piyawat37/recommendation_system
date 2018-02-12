@@ -68,6 +68,7 @@ def recommend_movies(predictions_df, userID, movies_df, original_ratings_df, num
                       )
 
     return user_full, recommendations
+
 already_rated, predictions = recommend_movies(preds_df, 672, movies_df, ratings_df)
 
 print("Already Rated")

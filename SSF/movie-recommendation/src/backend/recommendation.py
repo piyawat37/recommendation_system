@@ -13,7 +13,7 @@ users_list = [i.strip().split(",") for i in open(absPath.csv_file_path() + '/use
 movies_list = [i.strip().split(",") for i in open(absPath.csv_file_path() + '/movies.csv', 'r', encoding='utf8').readlines()]
 
 ratings_df = pd.DataFrame(ratings_list, columns = ['UserID', 'MovieID', 'Rating', 'Timestamp'], dtype = int)
-print(ratings_df.dtypes)
+#print(ratings_df.dtypes)
 for index, val in enumerate(movies_list):
     if len(val) > 3:
         movies_list[index] = [val[0], ','.join(val[1:len(val) - 1]), val[-1]]
@@ -23,14 +23,14 @@ movies_df['MovieID'] = movies_df['MovieID'].apply(pd.to_numeric)
 ratings_df['Rating'] = ratings_df['Rating'].apply(pd.to_numeric)
     
     
-print(movies_df.head())
-print(ratings_df.head())
+#print(movies_df.head())
+#print(ratings_df.head())
 R_df = ratings_df.pivot(index = 'UserID', columns ='MovieID', values = 'Rating').fillna(0)
-print('R_df')
-print(R_df.head(10))
+#print('R_df')
+#print(R_df.head(10))
 
 R = R_df.as_matrix()
-print(R)
+#print(R)
 user_ratings_mean = np.mean(R, axis = 1)
 R_demeaned = R - user_ratings_mean.reshape(-1, 1)
 
@@ -68,6 +68,10 @@ def recommend_movies(predictions_df, userID, movies_df, original_ratings_df, num
                       )
 
     return user_full, recommendations
-already_rated, predictions = recommend_movies(preds_df, 5, movies_df, ratings_df)
+already_rated, predictions = recommend_movies(preds_df, 672, movies_df, ratings_df)
 
+print("Already Rated")
 print(already_rated.head(10))
+
+print("Predictions Recommendation")
+print(predictions.head(10))

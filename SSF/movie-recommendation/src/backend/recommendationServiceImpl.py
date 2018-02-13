@@ -42,6 +42,10 @@ sigma = np.diag(sigma)
 all_user_predicted_ratings = np.dot(np.dot(U, sigma), Vt) + user_ratings_mean.reshape(-1, 1)
 preds_df = pd.DataFrame(all_user_predicted_ratings, columns = R_df.columns)
 
+
+'''
+    Ref. Nick Becker, Data Scientist at Enigma Technologies
+'''
 def recommend_movies(predictions_df, userID, movies_df, original_ratings_df, num_recommendations=10):
     
     # Get and sort the user's predictions

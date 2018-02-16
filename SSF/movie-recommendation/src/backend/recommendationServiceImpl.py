@@ -30,7 +30,7 @@ R_df = ratings_df.pivot(index = 'UserID', columns ='MovieID', values = 'Rating')
 #print(R_df.head(10))
 
 R = R_df.as_matrix()
-#print(R)
+print(R)
 user_ratings_mean = np.mean(R, axis = 1)
 R_demeaned = R - user_ratings_mean.reshape(-1, 1)
 
@@ -73,7 +73,7 @@ def recommend_movies(predictions_df, userID, movies_df, original_ratings_df, num
 
     return user_full, recommendations
 
-already_rated, predictions = recommend_movies(preds_df, 672, movies_df, ratings_df)
+already_rated, predictions = recommend_movies(preds_df, 200, movies_df, ratings_df)
 
 print("Already Rated")
 print(already_rated.head(10))

@@ -1,8 +1,11 @@
 <template>
   <div>
     <p>Home page</p>
-    <p>Random number from backend: {{ randomNumber }}</p>
-    <button @click="getRandom">New random number</button>
+    <form action="http://localhost:5000/signin" method="post">
+    	<p><input type="number" name="userId"/></p>
+    	<p><input type="submit" value="submit"/></p>
+    </form>
+    <!-- <button @click="getRandom">New random number</button> -->
   </div>
 </template>
 

@@ -21,7 +21,7 @@ db=mongo_client.recommendation_system
 movies_csv_file = open(BASEDIR+'movies.csv', 'r', encoding="utf8")
 reader_movies = csv.DictReader(movies_csv_file)
 db.movies.drop()
-header_movies = [ "movieId", "title", "genres"]
+header_movies = [ "movieId", "title", "genres" ]
 try:
     for each in reader_movies:
         row={}
@@ -39,7 +39,7 @@ except:
 users_csv_file = open(BASEDIR+'users.csv', 'r', encoding="utf8")
 reader_users = csv.DictReader(users_csv_file)
 db.users.drop()
-header_users = [ "userId", "username", "password", "timestamp"]
+header_users = [ "userId", "email", "username", "password", "status", "timestamp" ]
 
 try:
     for each in reader_users:
@@ -57,7 +57,7 @@ except:
 ratings_csv_file = open(BASEDIR+'ratings.csv', 'r', encoding="utf8")
 reader_ratings = csv.DictReader(ratings_csv_file)
 db.ratings.drop()
-header_ratings = [ "userId", "movieId", "rating", "timestamp"]
+header_ratings = [ "userId", "movieId", "rating", "timestamp" ]
 
 try:
     for each in reader_ratings:
@@ -69,3 +69,38 @@ try:
     print("Ratings Success!!")
 except:
     print("Ratings UnSuccess!! Because : ", sys.exc_info())
+    
+    
+# Comments
+comments_csv_file = open(BASEDIR+'comments.csv', 'r', encoding="utf8")
+reader_comments = csv.DictReader(comments_csv_file)
+db.comments.drop()
+header_comments = [ "userId", "movieId", "comment", "timestamp" ]
+
+try:
+    for each in reader_comments:
+        row={}
+        for field in header_comments:
+            row[field]=each[field]
+    
+        db.comments.insert(row)
+    print("Comments Success!!")
+except:
+    print("Comments UnSuccess!! Because : ", sys.exc_info())
+
+# Permissions
+permissions_csv_file = open(BASEDIR+'permissions.csv', 'r', encoding="utf8")
+reader_permissions = csv.DictReader(permissions_csv_file)
+db.permissions.drop()
+header_permissions = [ "userId", "permObj" ]
+
+try:
+    for each in reader_permissions:
+        row={}
+        for field in header_permissions:
+            row[field]=each[field]
+    
+        db.permissions.insert(row)
+    print("Permissions Success!!")
+except:
+    print("Permissions UnSuccess!! Because : ", sys.exc_info())

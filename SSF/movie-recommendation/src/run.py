@@ -26,17 +26,6 @@ def random_number():
     }
     return jsonify(response)
 
-
-@app.route('/success/<user>')
-def success(user):
-    return 'Success %s' %user
-
-@app.route('/signin', methods=['POST','GET'])
-def sign_in():
-    if request.method == 'POST':
-        userId = request.form['userId']
-        return redirect(url_for('Success', user = userId))
-
 @app.route('/', defaults={'path': ''})
 @app.route('/<path:path>')
 def catch_all(path):

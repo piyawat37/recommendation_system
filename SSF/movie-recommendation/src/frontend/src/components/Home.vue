@@ -1,11 +1,7 @@
 <template>
   <div>
-    <p>Home page</p>
-    <form action="http://localhost:5000/signin" method="post">
-    	<p><input type="number" name="userId"/></p>
-    	<p><input type="submit" value="submit"/></p>
-    </form>
-    <!-- <button @click="getRandom">New random number</button> -->
+  	<h1>Let's Try It Up.</h1>
+  	<h1>Your Turn.</h1>
   </div>
 </template>
 

@@ -3,7 +3,6 @@ Created on Dec 11, 2017
 
 @author: Piyawat Pemwattana
 '''
-import pandas as pd
 from pymongo import MongoClient
 
 def _connect_mongo(host, port, username, password, db):

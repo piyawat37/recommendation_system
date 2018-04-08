@@ -16,7 +16,12 @@
     "each-async": "^1.1.1",
     "indent-string": "^3.2.0",
     "vue": "^2.5.2",
-    "vue-router": "^3.0.1"
+    "vue-event-handler": "^1.1.0",
+    "vue-multilanguage": "^3.0.5",
+    "vue-progressbar": "^0.7.4",
+    "vue-resource": "^1.5.0",
+    "vue-router": "^3.0.1",
+    "vue-session": "^1.0.0"
   },
   "devDependencies": {
     "autoprefixer": "^7.1.2",

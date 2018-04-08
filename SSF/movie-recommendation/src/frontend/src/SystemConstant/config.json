@@ -1,0 +1,5 @@
+{
+	"commonService" : "http://localhost:5000/common-service",
+	"movieService" : "http://localhost:5000/movie-service",
+	"userService" : "http://localhost:5000/user-service"
+}

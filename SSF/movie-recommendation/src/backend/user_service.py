@@ -14,7 +14,7 @@ db = _connect_mongo(host='localhost', port=27017, username=None, password=None, 
 def pom_version():
     pom = pomServiceDto('user-service',
                   '0.0.1-PRODUCTION',
-                  '0.0.7-PROTOTYPE',
+                  '0.0.8-PROTOTYPE',
                   'Created on Feb 10, 2018',
                   'Piyawat Pemwattana')
     return pom
@@ -83,9 +83,9 @@ def get_user_by_token(access):
         return userObj
     
     
-userObj = get_user_by_token(access=data_test_token())
+# userObj = get_user_by_token(access=data_test_token())
 
-print(userObj.get_username())
+# print(userObj.get_username())
 #    
 # print(userObj.get_user_id())
 # print(userObj.get_email())

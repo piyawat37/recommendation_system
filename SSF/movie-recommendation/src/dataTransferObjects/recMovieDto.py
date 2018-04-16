@@ -9,7 +9,7 @@ import json
 class recMovieDto(object):
 
 
-    def __init__(self, movieId, title, genres, rating):
+    def __init__(self, movieId, title, genres, rating=None):
         self.movieId = movieId
         self.title = title
         self.genres = genres

@@ -5,8 +5,12 @@ Created on Apr 1, 2018
 '''
 
 class SystemConstant:
+    PRE_SALT = 'it'
+    POST_SALT = 'rec'
+    STATUS_A = 'A'
+    STATUS_I = 'I'
     RANGE_OF_PREDICTION = 200;
-    RANGE_OF_CATEGORY = 10;
+    RANGE_OF_CATEGORY = 18;
     GENRES = ['Adventure',
                 'Animation',
 #                 'Children',
@@ -26,12 +30,3 @@ class SystemConstant:
                 'Musical'
 #                 'Film-Noir' 
                 ]
-    
-    
-    #Example
-    def DEFINED_GENRES(self, genres):
-        if genres == 'Adventure':
-            return 1
-        elif genres == 'Animation':
-            return 2
-        

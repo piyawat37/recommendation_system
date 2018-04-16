@@ -43,6 +43,11 @@ export default {
   components: {
 		Slider,
   },
+  beforeCreate() {
+	  if(!localStorage.getItem('token')){
+		  this.$router.push('/')
+	  }
+  }
 }
 </script>
 

@@ -18,7 +18,7 @@ db=mongo_client.recommendation_system
 
 
 # Movies
-movies_csv_file = open(BASEDIR+'movies.csv', 'r', encoding="utf8")
+movies_csv_file = open(BASEDIR+'movies_test.csv', 'r', encoding="utf8")
 reader_movies = csv.DictReader(movies_csv_file)
 db.movies.drop()
 header_movies = [ "movieId", "title", "genres" ]
@@ -39,7 +39,7 @@ except:
 users_csv_file = open(BASEDIR+'users.csv', 'r', encoding="utf8")
 reader_users = csv.DictReader(users_csv_file)
 db.users.drop()
-header_users = [ "userId", "email", "username", "password", "status", "timestamp" ]
+header_users = [ "userId", "email", "username", "password", "status", "token", "timestamp" ]
 
 try:
     for each in reader_users:
@@ -54,7 +54,7 @@ except:
 
 
 # Ratings
-ratings_csv_file = open(BASEDIR+'ratings.csv', 'r', encoding="utf8")
+ratings_csv_file = open(BASEDIR+'ratings_test.csv', 'r', encoding="utf8")
 reader_ratings = csv.DictReader(ratings_csv_file)
 db.ratings.drop()
 header_ratings = [ "userId", "movieId", "rating", "timestamp" ]

@@ -1,13 +1,4 @@
 {
-	"home" : "หน้าหลัก",
-	"movies" : "ภาพยนต์ทั้งหมด",
-	"publicFavorite" : "คนชอบมากที่สุด",
-	"contactUs" : "ติดต่อเรา",
-	"signIn" : "เข้าสู่ระบบ",
-	"signUp" : "สมัครสมาชิก",
-	"manageAccount" : "จัดการบัญชี",
-	"langEN" : "EN",
-	"langTH" : "TH",
 	"recommended" : "ภาพยนต์แนะนำสำหรับคุณ",
 	"movieTopList" : "ภาพยนต์ที่คนนิยมมากที่สุด"
 }

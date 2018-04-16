@@ -1,0 +1,20 @@
+{
+	"home" : "Home",
+	"movies" : "Movies",
+	"publicFavorite" : "Public Favorite",
+	"contactUs" : "Contact Us",
+	"signIn" : "Sign in",
+	"signUp" : "Sign up",
+	"signOut" : "Sign out",
+	"manageAccount" : "Manage Account",
+	"langEN" : "EN",
+	"langTH" : "TH",
+	"signInBtn" : "SIGN IN",
+	"signUpBtn" : "SIGN UP",
+	"cancel" : "CANCEL",
+	"username": "Username",
+	"password": "Password",
+	"forgot": "forgot your password ?",
+	
+	"require" : "Please input your username and password."
+}

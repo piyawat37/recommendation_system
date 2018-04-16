@@ -1,13 +1,4 @@
 {
-	"home" : "Home",
-	"movies" : "Movies",
-	"publicFavorite" : "Public Favorite",
-	"contactUs" : "Contact Us",
-	"signIn" : "Sign In",
-	"signUp" : "Sign Up",
-	"manageAccount" : "Manage Account",
-	"langEN" : "EN",
-	"langTH" : "TH",
 	"recommended" : "Movies recommended for you",
 	"movieTopList" : "Movies Top Rated"
 }

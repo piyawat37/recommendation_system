@@ -5,21 +5,25 @@ Created on Dec 11, 2017
 '''
 #Defined Version
 
+from notebook.tests.test_serverextensions import SimpleNamespace
+from pandas import json
+
+from SystemConstant import SystemConstant
 from connectMongoDB import _connect_mongo
+from recMovieDto import recMovieDto
+from pomServiceDto import pomServiceDto
 import numpy as np
 import pandas as pd
-from SystemConstant import SystemConstant
-from pandas import json
+from jsonschema._validators import items
+
 
 
 def pom_version():
-    pom = {
-        'service' : 'movie-service',
-        'version' : '0.0.1-PRODUCTION',
-        'poc_version' : '0.0.6-PROTOTYPE',
-        'create_date' : 'Created on Mar 3, 2018',
-        'author' : 'Piyawat Pemwattana'
-    }
+    pom = pomServiceDto('movie-service',
+                  '0.0.1-PRODUCTION',
+                  '0.0.7-PROTOTYPE',
+                  'Created on Dec 11, 2018',
+                  'Piyawat Pemwattana')
     return pom
 
 
@@ -35,7 +39,7 @@ def initial_dataframe(collection, query={}, no_id=True):
 '''
    # Ref. Nick Becker, Data Scientist at Enigma Technologies
 '''
-def recommend_movies(predictions_df, userID, movies_df, original_ratings_df, num_recommendations=SystemConstant.RANGE_OF_PREDICTION):
+def recommend_movies(predictions_df, userID, movies_df, original_ratings_df, users_df, num_recommendations=SystemConstant.RANGE_OF_PREDICTION):
     
     # Get and sort the user's predictions
     user_row_number = userID - 1 # UserID starts at 1, not 0
@@ -55,30 +59,36 @@ def recommend_movies(predictions_df, userID, movies_df, original_ratings_df, num
                left_on = 'movieId',
                right_on = 'movieId').
          rename(columns = {user_row_number: 'Predictions'}).
-         sort_values('Predictions', ascending = False).
-                       iloc[:num_recommendations, :-1]
+         sort_values('Predictions', ascending = False)
                       )
-    rec_movie_id_list = recommendations['movieId'].iloc[:SystemConstant.RANGE_OF_CATEGORY].tolist()
-    
 
 #     return user_full, recommendations
-    return rec_movie_id_list, recommendations
+    #Merge Rating
+#     merge_ratings_user = pd.merge(original_ratings_df, users_df, on = 'userId')
+#     rec_with_rating = pd.merge(recommendations, merge_ratings_user, on='movieId')
+    return recommendations
 
+def get_movies_top_rate(movies, users, ratings):
+    merge_ratings_user = pd.merge(ratings,users, on = 'userId')
+    movie_data = pd.merge(movies,merge_ratings_user, on = 'movieId').filter(items=['movieId', 'title', 'genres', 'rating'])
+    movie_top_rate = movie_data.groupby(['movieId','title', 'genres'], as_index=False).mean().sort_values('rating', ascending = False).head(20)
+    return movie_top_rate
 
 def get_movies_classify_by_prediction(genres, predic, range):
     #TODO: Function classify genres by predic AUTHOR: PIYAWAT PEMWATTANA
     movie_list_filter_genres = predic.loc[predic['genres'].str.contains(genres)].iloc[:range]
     return movie_list_filter_genres
 
-def transform_dataFrame(id):
+def transform_dataFrame(id=None):
+    ratings_df = initial_dataframe(collection='ratings')
+    movies_df = initial_dataframe(collection='movies')
+    users_df = initial_dataframe(collection='users')
+    movies_df['movieId'] = movies_df['movieId'].apply(pd.to_numeric)
+    ratings_df['movieId'] = ratings_df['movieId'].apply(pd.to_numeric)
+    ratings_df['rating'] = ratings_df['rating'].apply(pd.to_numeric)
+    movie_list = []
+    movieServiceObj = {}
     if id != None:
-        movieServiceObj = {}
-        ratings_df = initial_dataframe(collection='ratings')
-        movies_df = initial_dataframe(collection='movies')
-        movies_df.drop(movies_df.index[:1], inplace=True)
-        movies_df['movieId'] = movies_df['movieId'].apply(pd.to_numeric)
-        ratings_df['movieId'] = ratings_df['movieId'].apply(pd.to_numeric)
-        ratings_df['rating'] = ratings_df['rating'].apply(pd.to_numeric)
     
         R_df = ratings_df.pivot(index = 'userId', columns ='movieId', values = 'rating').fillna(0)
         
@@ -87,22 +97,47 @@ def transform_dataFrame(id):
         R_demeaned = R - user_ratings_mean.reshape(-1, 1)
         
         from scipy.sparse.linalg import svds
-        U, sigma, Vt = svds(R_demeaned, k = 2)
+        U, sigma, Vt = svds(R_demeaned, k = 1)
         
         sigma = np.diag(sigma)
         
         all_user_predicted_ratings = np.dot(np.dot(U, sigma), Vt) + user_ratings_mean.reshape(-1, 1)
         preds_df = pd.DataFrame(all_user_predicted_ratings, columns = R_df.columns)
             
-        recommended_list, recommendations = recommend_movies(preds_df, id, movies_df, ratings_df)
-        movieServiceObj['recommended'] = recommended_list
+        recommendations = recommend_movies(preds_df, id, movies_df, ratings_df, users_df)
+        
         if len(recommendations) > 0 :
-            for value in SystemConstant.GENRES:
-                movie_list_filter_genres = get_movies_classify_by_prediction(value, recommendations, SystemConstant.RANGE_OF_CATEGORY)
-                if(len(movie_list_filter_genres) > 9):
-                    movieServiceObj[value] = movie_list_filter_genres['movieId'].tolist()
+            for genres in SystemConstant.GENRES:
+                movie_list = []
+                movie_list_filter_genres = get_movies_classify_by_prediction(genres, recommendations, SystemConstant.RANGE_OF_CATEGORY)
+                if(len(movie_list_filter_genres) > 17):
+                    for index, row in movie_list_filter_genres.iterrows():
+                        movieObj = recMovieDto(row['movieId'], row['title'], row['genres'])
+#                         movieServiceObj[genres] = {
+#                             movieObj.get_title() : movieObj
+#                         }
+                        movie_list.append(movieObj.toJSON())
+#                         print(genres + ', ' +movieObj.get_title())
+                if len(movie_list) > 0 :
+                    movieServiceObj[genres] = movie_list
+            
+            for index, row in recommendations.iloc[:SystemConstant.RANGE_OF_CATEGORY].iterrows():
+                movieObj = recMovieDto(row['movieId'], row['title'], row['genres'])
+                movie_list.append(movieObj.toJSON())
+            if len(movie_list) > 0 :
+                movieServiceObj['Recommended'] = movie_list
+        return movieServiceObj
     else:
         #Another Function DEF PLEASE LOGIN
-        return "id none"
-    
-    return movieServiceObj
+        movies_top = get_movies_top_rate(movies_df, users_df, ratings_df)
+        if len(movies_top) > 0 :
+            movie_list = []
+            for index, row in movies_top.iterrows():
+                movieObj = recMovieDto(row['movieId'], row['title'], row['genres'], row['rating'])
+                movie_list.append(movieObj.toJSON())
+            
+            movieServiceObj['movieTopRate'] = movie_list    
+        return movieServiceObj
+
+movies_top = transform_dataFrame(1)
+print(movies_top)

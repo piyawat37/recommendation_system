@@ -241,6 +241,7 @@ export default {
     }
   },
   created () {
+	  	this.language.toUpperCase()
 		var vm = this;
 		vm.setSignInButtonSize()
 		vm.uiLabel = require("./i18n/app-master-"+vm.language+".json")

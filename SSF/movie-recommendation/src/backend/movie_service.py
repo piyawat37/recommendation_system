@@ -17,8 +17,7 @@ import pandas as pd
 from jsonschema._validators import items
 from jedi.refactoring import rename
 from sympy.physics.units.definitions import percent
-
-
+from QLearning import QLearningTable
 
 def pom_version():
     pom = pomServiceDto('movie-service',
@@ -103,7 +102,6 @@ def transform_dataFrame(id=None):
     movie_list = []
     movieServiceObj = {}
     if id != None:
-    
         R_df = ratings_df.pivot(index = 'userId', columns ='movieId', values = 'rating').fillna(0)
         
         R = R_df.as_matrix()
@@ -119,6 +117,8 @@ def transform_dataFrame(id=None):
         preds_df = pd.DataFrame(all_user_predicted_ratings, columns = R_df.columns)
             
         recommendations = recommend_movies(preds_df, id, movies_df, ratings_df, users_df)
+        
+        QLearningTable.learn(s, a, r, s_)
         
         if len(recommendations) > 0 :
             for genres in SystemConstant.GENRES:

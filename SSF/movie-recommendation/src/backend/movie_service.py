@@ -5,7 +5,6 @@ Created on Dec 11, 2017
 '''
 #Defined Version
 
-from notebook.tests.test_serverextensions import SimpleNamespace
 from pandas import json
 
 from SystemConstant import SystemConstant
@@ -14,9 +13,6 @@ from recMovieDto import recMovieDto
 from pomServiceDto import pomServiceDto
 import numpy as np
 import pandas as pd
-from jsonschema._validators import items
-from jedi.refactoring import rename
-from sympy.physics.units.definitions import percent
 from QLearning import QLearningTable
 
 def pom_version():
@@ -118,7 +114,7 @@ def transform_dataFrame(id=None):
             
         recommendations = recommend_movies(preds_df, id, movies_df, ratings_df, users_df)
         
-        QLearningTable.learn(s, a, r, s_)
+#         QLearningTable.learn(s, a, r, s_)
         
         if len(recommendations) > 0 :
             for genres in SystemConstant.GENRES:

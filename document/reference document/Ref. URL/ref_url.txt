@@ -1,0 +1,10 @@
+- http://www.xorbin.com/tools/sha256-hash-calculator
+- https://th.wikipedia.org/wiki/%E0%B9%80%E0%B8%A1%E0%B8%97%E0%B8%A3%E0%B8%B4%E0%B8%81%E0%B8%8B%E0%B9%8C_(%E0%B8%84%E0%B8%93%E0%B8%B4%E0%B8%95%E0%B8%A8%E0%B8%B2%E0%B8%AA%E0%B8%95%E0%B8%A3%E0%B9%8C)
+- http://antoinevastel.github.io/machine%20learning/python/2016/02/14/svd-recommender-system.html
+- https://beckernick.github.io/matrix-factorization-recommender/
+- http://nextflow.in.th/2016/node-js-for-web-developer/
+- https://vuejs.org/v2/guide/
+- https://bootstrap-vue.js.org/
+- http://flask.pocoo.org/docs/0.12/quickstart/
+- https://codeburst.io/full-stack-single-page-application-with-vue-js-and-flask-b1e036315532
+- https://docs.mongodb.com/getting-started/shell/introduction/

@@ -114,7 +114,7 @@ def transform_dataFrame(id=None):
             
         recommendations = recommend_movies(preds_df, id, movies_df, ratings_df, users_df)
         
-#         QLearningTable.learn(, recommendations, r, s_)
+#         QLearningTable.learn(s, a, r, s_)
         
         movies_top = get_movies_top_rate(movies_df, users_df, ratings_df)
         if len(movies_top) > 0 :

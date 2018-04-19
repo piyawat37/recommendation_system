@@ -19,7 +19,7 @@ import user_service
 import json
 from SystemException import SystemException
 from SystemConstant import SystemConstant
-from user_service import get_user_by_token
+from user_service import get_user_by_token, check_duplicate_user
 
 
 
@@ -94,6 +94,25 @@ def signIn():
                 resp = Response({SystemException.message_validate_not_authen(None, data['language'])}, status=400, mimetype='application/json')
                 return resp
 
+@app.route("/user-service/signUp", methods = ['POST', 'GET'])
+def signUp():
+    if request.method == 'POST':
+        data = json.loads(request.data)
+        response = {}
+        print(data['email'])
+        print(data['username'])
+        print(data['password'])
+        print(data['language'])
+        if check_duplicate_user(data['username'], data['email'], data['language']) == False:
+            userObj = user_service.create_new_user(user_data=data)
+        else:
+            return check_duplicate_user(data['username'], data['email'], data['language'])
+            
+        
+        response = {
+            'user' : userObj.toJSON()
+        }
+        return response
 
 @app.route("/logout")
 @login_required

@@ -13,7 +13,9 @@
 	"signUpBtn" : "SIGN UP",
 	"cancel" : "CANCEL",
 	"username": "Username",
+	"email": "Email",
 	"password": "Password",
+	"rePassword": "Re-password",
 	"forgot": "forgot your password ?",
 	
 	"require" : "Please input your username and password."

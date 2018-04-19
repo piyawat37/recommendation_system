@@ -7,13 +7,14 @@ Created on Dec 11, 2017
 
 from pandas import json
 
+from QLearning import QLearningTable
 from SystemConstant import SystemConstant
 from connectMongoDB import _connect_mongo
-from recMovieDto import recMovieDto
-from pomServiceDto import pomServiceDto
 import numpy as np
 import pandas as pd
-from QLearning import QLearningTable
+from pomServiceDto import pomServiceDto
+from recMovieDto import recMovieDto
+
 
 def pom_version():
     pom = pomServiceDto('movie-service',
@@ -74,13 +75,12 @@ def recommend_movies(predictions_df, userID, movies_df, original_ratings_df, use
 #     rec_with_rating = pd.merge(predict_recommend, merge_ratings_user, how = 'left'
 #                                , left_on = 'movieId', right_on='movieId').filter(items=['movieId', 'title', 'genres', 'username', 'Predictions', 'rating'])
 #     recommendations = rec_with_rating.groupby(['movieId','title', 'genres', 'username'], as_index=False).mean().sort_values('Predictions', ascending = False).head(20)
-    print(predict_recommend)
     return predict_recommend
 
 def get_movies_top_rate(movies, users, ratings):
     merge_ratings_user = pd.merge(ratings,users, on = 'userId')
     movie_data = pd.merge(movies,merge_ratings_user, on = 'movieId').filter(items=['movieId', 'title', 'genres', 'rating'])
-    movie_top_rate = movie_data.groupby(['movieId','title', 'genres'], as_index=False).mean().sort_values('rating', ascending = False).head(20)
+    movie_top_rate = movie_data.groupby(['movieId','title', 'genres'], as_index=False).mean().sort_values('rating', ascending = False).head(SystemConstant.RANGE_OF_CATEGORY)
     return movie_top_rate
 
 def get_movies_classify_by_prediction(genres, predic, range):
@@ -97,9 +97,9 @@ def transform_dataFrame(id=None):
     ratings_df['rating'] = ratings_df['rating'].apply(pd.to_numeric)
     movie_list = []
     movieServiceObj = {}
+    ranking = 0
     if id != None:
         R_df = ratings_df.pivot(index = 'userId', columns ='movieId', values = 'rating').fillna(0)
-        
         R = R_df.as_matrix()
         user_ratings_mean = np.mean(R, axis = 1)
         R_demeaned = R - user_ratings_mean.reshape(-1, 1)
@@ -116,7 +116,23 @@ def transform_dataFrame(id=None):
         
 #         QLearningTable.learn(, recommendations, r, s_)
         
+        movies_top = get_movies_top_rate(movies_df, users_df, ratings_df)
+        if len(movies_top) > 0 :
+            movie_list = []
+            for index, row in movies_top.iterrows():
+                movieObj = recMovieDto(row['movieId'], row['title'], row['genres'], row['rating'])
+                movie_list.append(movieObj.toJSON())
+            
+            movieServiceObj['movieTopRate'] = movie_list
+               
         if len(recommendations) > 0 :
+            movie_list = []
+            for index, row in recommendations.iloc[:SystemConstant.RANGE_OF_CATEGORY].iterrows():
+                movieObj = recMovieDto(row['movieId'], row['title'], row['genres'])
+                movie_list.append(movieObj.toJSON())
+            if len(movie_list) > 0 :
+                movieServiceObj['Recommended'] = movie_list
+                
             for genres in SystemConstant.GENRES:
                 movie_list = []
                 movie_list_filter_genres = get_movies_classify_by_prediction(genres, recommendations, SystemConstant.RANGE_OF_CATEGORY)
@@ -131,11 +147,6 @@ def transform_dataFrame(id=None):
                 if len(movie_list) > 0 :
                     movieServiceObj[genres] = movie_list
             
-            for index, row in recommendations.iloc[:SystemConstant.RANGE_OF_CATEGORY].iterrows():
-                movieObj = recMovieDto(row['movieId'], row['title'], row['genres'])
-                movie_list.append(movieObj.toJSON())
-            if len(movie_list) > 0 :
-                movieServiceObj['Recommended'] = movie_list
         return movieServiceObj
     else:
         #Another Function DEF PLEASE LOGIN
@@ -146,8 +157,8 @@ def transform_dataFrame(id=None):
                 movieObj = recMovieDto(row['movieId'], row['title'], row['genres'], row['rating'])
                 movie_list.append(movieObj.toJSON())
             
-            movieServiceObj['movieTopRate'] = movie_list    
+            movieServiceObj['movieTopRate'] = movie_list
         return movieServiceObj
 
 movies_top = transform_dataFrame(1)
-# print(movies_top)
+print(movies_top)

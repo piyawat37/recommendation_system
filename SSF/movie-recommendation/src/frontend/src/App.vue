@@ -17,7 +17,7 @@
 		    <b-navbar-nav class="ml-auto">
 				<b-navbar-nav v-if="!tokenStorage">
 			      <b-nav-item href="#" v-b-modal.signIn><span v-text="uiLabel.signIn"></span></b-nav-item>
-			      <b-nav-item href="#"><span v-text="uiLabel.signUp"></span></b-nav-item>
+			      <b-nav-item href="#" v-b-modal.signUp><span v-text="uiLabel.signUp"></span></b-nav-item>
 			    </b-navbar-nav>
 			    <b-navbar-nav v-if="tokenStorage">
 			      <b-nav-item><span v-text="user_token.username"></span></b-nav-item>
@@ -71,7 +71,62 @@
 				</b-form>
        		</b-container>
 		</b-modal>
+		
+		
+		<b-modal  id="signUp" v-bind:title="uiLabel.signUp"
+			ref="signUp"
+			header-bg-variant="dark" header-text-variant="light"
+			body-bg-variant="dark" body-text-variant="light"
+			footer-bg-variant="dark" footer-text-variant="light"
+			:ok-title="uiLabel.signIn" hide-footer hide-header
+            no-close-on-backdrop no-close-on-esc>
+           	<b-container fluid>
+           		<div slot="modal-header" class="w-100">
+		       		 <b-row>
+		       		 	<b-col cols="12" class="text-left">
+		       		 		<h4 v-text="uiLabel.signUp"></h4>
+		       		 	</b-col>
+		       		 </b-row>
+			     </div>
+			     <hr style="background-color: rgb(255, 255, 255);"/>
+	            <b-form>
+					<b-form-group>
+						<b-form-input type="email"
+					                 :placeholder="uiLabel.email"
+					                 v-model.trim="signUp.email"></b-form-input>
+					</b-form-group>
+					<b-form-group>
+						<b-form-input type="text"
+					                 :placeholder="uiLabel.username"
+					                 v-model.trim="signUp.username"></b-form-input>
+					</b-form-group>
+					<b-form-group v-bind:class="{ 'form-group--error': $v.signUp.password.$error }">
+					    <b-form-input type="password"
+				                    :placeholder="uiLabel.password" @input="$v.signUp.password.$touch()"
+				                    v-model.trim="signUp.password"></b-form-input>
+				                    <span class="form-group__message" v-if="!$v.signUp.password.required && $v.signUp.password.$dirty">Password is required.</span>
+				                   <span class="form-group__message" v-if="!$v.signUp.password.minLength">Password must have at least {{ $v.signUp.password.$params.minLength.min }} letters.</span>
+					</b-form-group>
+					<b-form-group v-bind:class="{ 'form-group--error': $v.signUp.password.$error }">
+					    <b-form-input type="password"
+				                    :placeholder="uiLabel.rePassword" @input="$v.signUp.rePassword.$touch()"
+				                    v-model.trim="signUp.rePassword"></b-form-input>
+				                    <span class="form-group__message" v-if="!$v.signUp.rePassword.required && $v.signUp.password.$dirty">Re-password is required.</span>
+				                    <span class="form-group__message" v-if="!$v.signUp.rePassword.sameAsPassword">Passwords must be identical.</span>
+					</b-form-group>
+	           		<div slot="modal-footer" class="w-100">
+			       		 <b-row>
+			       		 	<b-col cols="12" class="text-right" v-bind:class="signInRpsClass">
+			       		 		<b-btn :size="signInSize" class="float-right" variant="secondary" @click="handleSignUp" v-text="uiLabel.signUpBtn" style="margin-left: 5px;"></b-btn>
+			       		 		<b-btn :size="signInSize" class="float-right" variant="danger" @click="clearSignUp" v-text="uiLabel.cancel"></b-btn>
+			       		 	</b-col>
+			       		 </b-row>
+				     </div>
+				</b-form>
+       		</b-container>
+		</b-modal>
         <!-- for router view -->
+        {{$v}}
         <router-view v-if="progress == false"></router-view>
     </div>
 </template>
@@ -81,6 +136,9 @@
 import configService from './SystemConstant/config.json'
 import { vueTopprogress } from 'vue-top-progress'
 import auth from './auth/'
+import $ from 'jquery'
+import { validationMixin } from "vuelidate"
+import { required, minLength, sameAs } from "vuelidate/lib/validators"
 export default {
   name: 'app',
   data () {
@@ -97,6 +155,13 @@ export default {
 			username: '',
 			password: '',
 			is_authenticated: false,
+			language: this.language
+		},
+		signUp:{
+			email: '',
+			username: '',
+			password: '',
+			rePassword: '',
 			language: this.language
 		},
 		user_token: {},
@@ -157,6 +222,13 @@ export default {
       this.user.password = ''
    	  this.$refs.signIn.hide()
     },
+    clearSignUp () {
+        this.signUp.email = ''
+        this.signUp.username = ''
+        this.signUp.password = ''
+        this.signUp.rePassword = ''
+   		this.$refs.signUp.hide()
+    },
     handleOk (evt) {
       // Prevent modal from closing
       evt.preventDefault()
@@ -167,9 +239,14 @@ export default {
         this.handleSignIn()
       }
     },
+   	handleSignUp(){
+    	this.getAuthHeader()
+        this.signUp.language = this.language
+    	this.signup(this, this.signUp, '/')
+    },
     handleSignIn () {
     	this.getAuthHeader()
-    	this.login(this, this.user, '/home')
+    	this.login(this, this.user, '/')
     },
     getWindowWidth(event) {
         this.windowWidth = document.documentElement.clientWidth;
@@ -195,19 +272,20 @@ export default {
       });
     },
     signup(context, creds, redirect) {
-      /* context.$http.post(configService.userService + '/signUp', creds).then(response => {
-        localStorage.setItem('id_token', data.id_token)
-        localStorage.setItem('access_token', data.access_token)
-
-        this.user.authenticated = true
-
-        if(redirect) {
-          router.go(redirect)        
-        }
-      }, response => {
-      	context.error = response.data
-  		console.log(response.data)
-      }); */
+    	context.$http.post(configService.userService + '/signUp', creds).then(response => {
+          	localStorage.setItem('token', response.body.user.token)
+          	this.user = response.body.user
+          	// Redirect to a specified route
+          	if(redirect) {
+          		this.$router.go(redirect)
+          		this.$forceUpdate();
+          	}
+          }, response => {
+       	  	this.$swal('Error!', response.bodyText, 'error')
+       	  	localStorage.removeItem('token');
+          	context.error = response.statusText
+      		console.log(response.statusText)
+          });
     },
 
     logout() {
@@ -247,28 +325,29 @@ export default {
 		vm.uiLabel = require("./i18n/app-master-"+vm.language+".json")
   },
   beforeCreate() {
+	  var vm = this
 	  if(!localStorage.getItem('token')){
-		this.$router.push('/')
+	  	vm.$router.push('/')
 	  }else{
-		this.$Progress.start()
-		this.$http.post(configService.userService + '/authenByToken', {token: localStorage.getItem('token')}).then(response => {
+	 	vm.$Progress.start()
+		vm.$http.post(configService.userService + '/authenByToken', {token: localStorage.getItem('token')}).then(response => {
 		  // get body data
-			this.user_token = response.body.user
-			this.$http.get(configService.movieService + '/getMovieByUserId/', {params: {id: this.user_token.userId, language: localStorage['vue-lang']}}).then(response => {
+			vm.user_token = response.body.user
+			vm.$http.get(configService.movieService + '/getMovieByUserId/', {params: {id: this.user_token.userId, language: localStorage['vue-lang']}}).then(response => {
 		      // get body data
-				this.movieList = response.body.movieList
-				this.$Progress.decrease(10)
-				this.$Progress.finish()
-				this.progress = false
+				vm.movieList = response.body.movieList
+				vm.$Progress.decrease(10)
+				vm.$Progress.finish()
+				vm.progress = false
 		    }, response => {
 		      // error callback
-				this.$Progress.fail()
-				this.progress = false
+				vm.$Progress.fail()
+				vm.progress = false
 		    });
 	    }, response => {
 	      // error callback
-			this.$refs.topProgress.fail()
-			this.progress = false
+			vm.$refs.topProgress.fail()
+			vm.progress = false
 	    });
 	  }
   },
@@ -279,6 +358,21 @@ export default {
     window.removeEventListener('resize', this.getWindowWidth);
     window.removeEventListener('resize', this.getWindowHeight);
   },
+  mixins: [
+      validationMixin
+  ],
+  validations: {
+    signUp: {
+      password:{
+    	  required,
+    	  minLength: minLength(8)
+      },
+	  rePassword: {
+		  required,
+		  sameAsPassword: sameAs('password')
+	  } 
+    }
+  }
 }
 </script>
 

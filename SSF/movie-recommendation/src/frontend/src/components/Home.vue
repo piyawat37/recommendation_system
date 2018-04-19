@@ -1,9 +1,27 @@
 <template>
 	<div>
 		<transition-group name="movie-fade" appear mode="out-in">
-			<div v-for="value, key in movieList" v-bind:key="key" style="text-align: left;">
-				<span v-text="key"></span>
-				<Slider v-bind:id="key" v-bind:content-data="value"/>
+			<div v-for="value, key in movieList" v-if="key == 'movieTopRate'" v-bind:key="key" style="text-align: left; margin-top: 15px">
+				<label class="control-label">
+					<span v-text="uiLabel.movieTopList"></span>
+				</label>
+				<Slider v-bind:id="key" v-bind:data-list="value"/>
+			</div>
+		</transition-group>
+		<transition-group name="movie-fade" appear mode="out-in">
+			<div v-for="value, key in movieList" v-if="key == 'Recommended'" v-bind:key="key" style="text-align: left; margin-top: 15px">
+				<label class="control-label">
+					<span v-text="uiLabel.recommended"></span>
+				</label>
+				<Slider v-bind:id="key" v-bind:data-list="value"/>
+			</div>
+		</transition-group>
+		<transition-group name="movie-fade" appear mode="out-in">
+			<div v-for="value, key in movieList" v-if="key != 'movieTopRate' && key != 'Recommended'" v-bind:key="key" style="text-align: left; margin-top: 15px">
+				<label class="control-label">
+					<span v-text="key"></span>
+				</label>
+				<Slider v-bind:id="key" v-bind:data-list="value"/>
 			</div>
 		</transition-group>
 	</div>
@@ -32,6 +50,7 @@ export default {
 	   	/* event.currentTarget.classList.add('large'); */
     },
 	setUiLabel (lang){
+    	this.language = lang
 		this.uiLabel = require("../i18n/home-"+this.language+".json")
 	}
   },

@@ -3,11 +3,18 @@ Created on Feb 10, 2018
 
 @author: Piyawat Pemwattana
 '''
-from pomServiceDto import pomServiceDto
-from connectMongoDB import _connect_mongo
-from userServiceDto import userServiceDto
-from SystemConstant import SystemConstant
 import secrets
+
+from flask import Response
+import pymongo
+
+from SystemConstant import SystemConstant
+from SystemException import SystemException
+from SystemMessage import SystemMessage
+from connectMongoDB import _connect_mongo
+from pomServiceDto import pomServiceDto
+from userServiceDto import userServiceDto
+
 
 db = _connect_mongo(host='localhost', port=27017, username=None, password=None, db='recommendation_system')
 
@@ -21,9 +28,9 @@ def pom_version():
     
 def data_test():
     return {
-        'username' : 'admin',
-        'password' : 'password',
-        'authenticated': True
+        'email' : 'email@email.com',
+        'username' : 'adminnn',
+        'password' : 'password'
     }
     
 def data_test_token():
@@ -82,14 +89,38 @@ def get_user_by_token(access):
                  , token=user['token'])
         return userObj
     
+def check_duplicate_user(username, email, language):
+    isDuplicate = False
     
-# userObj = get_user_by_token(access=data_test_token())
+    if db['users'].find_one({'email' : email}) != None:
+        try:
+            raise SystemException(SystemException.message_duplicate_context(None, SystemMessage.Msg['emailException-'+language], language))
+        except SystemException as error:
+            print(error)
+            resp = Response({SystemException.message_duplicate_context(None, SystemMessage.Msg['emailException-'+language], language)}, status=400, mimetype='application/json')
+            return resp
+        
+    if db['users'].find_one({'username' : username}) != None:
+        try:
+            raise SystemException(SystemException.message_duplicate_context(None, SystemMessage.Msg['usernameException-'+language], language))
+        except SystemException as error:
+            print(error)
+            resp = Response({SystemException.message_duplicate_context(None, SystemMessage.Msg['usernameException-'+language], language)}, status=400, mimetype='application/json')
+            return resp
+    
+    
+    return isDuplicate
 
-# print(userObj.get_username())
-#    
-# print(userObj.get_user_id())
-# print(userObj.get_email())
-# print(userObj.get_username())
-# print(userObj.get_status())
-# print(userObj.get_is_authenticated())
-# print(userObj.get_token())
+def create_new_user(user_data):
+    userGetMax = db.users.find().sort('userId', -1).limit(1)
+    userId = ''
+    for cursor in userGetMax:
+        userId = int(cursor['userId'])
+    userObj = userServiceDto(userId=userId+1
+                 , email=user_data['email']
+                 , username=user_data['username']
+                 , status=SystemConstant.STATUS_A
+                 , is_authenticated=True
+                 , token=secrets.token_urlsafe())
+    
+create_new_user(data_test)

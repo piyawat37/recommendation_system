@@ -13,6 +13,12 @@ class SystemMessage(object):
         "policyStatus-EN" : "because this account has been suspended. ",
         "policyStatus-TH" : "เนื่องจากบัญชีนี้ถูกระงับการใช้งาน ",
         "policyAuthen-EN" : "because user is unauthorized.",
-        "policyAuthen-TH" : "เนื่องจากไม่มีผู้ใช้งานนี้อยู่ในระบบ"
+        "policyAuthen-TH" : "เนื่องจากไม่มีผู้ใช้งานนี้อยู่ในระบบ",
+        "duplicate-EN" : " is duplicated",
+        "duplicate-TH" : "มีการใช้งานแล้ว",
+        "usernameException-EN" : "Username",
+        "usernameException-TH" : "ชื่อผู้ใช้นี้",
+        "emailException-EN" : "Email",
+        "emailException-TH" : "อีเมลล์",
     }
         

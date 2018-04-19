@@ -34,13 +34,14 @@
             :id="'slide-'+container+'-'+contentIndex"
             :data-container-index="slideContainerIndex"
             :data-content-index="contentIndex"
-          ) {{content}}
+          ) <span v-text="content.title"></span> 
 </template>
 
 
 <script>
 /* eslint-disable */
 import _ from 'lodash';
+import $ from 'jquery';
 
 export default {
   name: 'Slider',
@@ -60,7 +61,7 @@ export default {
       },
     },
   },
-  props: ['contentData'],
+  props: ['dataList'],
   data() {
     return {
       bodyMarginLeft: document.body.getBoundingClientRect().left,
@@ -71,6 +72,7 @@ export default {
       isSliding: false,
       slideContainer: [-1, 0, 1],
       contentContainer: [],
+      contentData: [],
       contentContainerSize: 6,
       infinityLoop: false
     };
@@ -87,7 +89,7 @@ export default {
           this.slideContainer.unshift(this.slideContainer[0] - 1);
         }
         this.slideContainer.pop();
-        this.setColor(this.slideContainer[0]);
+        this.setImageSlide(this.slideContainer[0]);
       }
     }, 300),
     right: _.debounce(function slideRight() {
@@ -102,7 +104,7 @@ export default {
           this.slideContainer.push(_.last(this.slideContainer) + 1);
         }
         this.slideContainer.shift();
-        this.setColor(_.last(this.slideContainer));
+        this.setImageSlide(_.last(this.slideContainer));
       }
     }, 300),
     selectSlide(event) {
@@ -182,7 +184,9 @@ export default {
         left: `${showcaseWidth}px`,
         width: `${selectedRect.width}px`,
         height: `${selectedRect.height}px`,
-        'background-color': `${selectedSlide.style.backgroundColor}`,
+        'background-image': `${selectedSlide.style.backgroundImage}`,
+        'background-size': `${selectedSlide.style.backgroundSize}`,
+        'background-repeat': `${selectedSlide.style.backgroundRepeat}`,
       };
       let transformOrigin = 'center center';
       if (this.selectedSlidePos.isFirst) {
@@ -207,34 +211,50 @@ export default {
       this.updateContentContainer();
     },
     setContentContainer() {
+   		var vm = this
       if (window.matchMedia('(max-width: 480px)').matches) {
-        this.contentContainerSize = 2;
+        vm.contentContainerSize = 2;
       } else if (window.matchMedia('(max-width: 768px)').matches) {
-        this.contentContainerSize = 3;
+        vm.contentContainerSize = 3;
       } else if (window.matchMedia('(max-width:1024px)').matches) {
-        this.contentContainerSize = 4;
+        vm.contentContainerSize = 4;
       } else {
-        this.contentContainerSize = 6;
+        vm.contentContainerSize = 6;
       }
-      this.contentContainer = _.chunk(this.contentData, this.contentContainerSize);
+      /* $.each(vm.dataList, function(key, value){
+    	  vm.contentData[key] = value.title 
+      }) */
+      vm.contentData = vm.dataList
+      vm.contentContainer = _.chunk(vm.contentData, vm.contentContainerSize);
     },
     updateContentContainer() {
       this.slideContainer = [-1, 0, 1];
-      this.setColor(this.slideContainer[0]);
-      this.setColor(this.slideContainer[1]);
-      this.setColor(this.slideContainer[2]);
+      this.setImageSlide(this.slideContainer[0]);
+      this.setImageSlide(this.slideContainer[1]);
+      this.setImageSlide(this.slideContainer[2]);
     },
-    setColor(containerIndex, callback) {
+    setImageSlide(containerIndex, callback) {
       // Helper function for the demo
-      if (containerIndex > -1 && containerIndex < this.contentContainer.length) {
-        this.$nextTick(() => {
-          this.contentContainer[containerIndex].forEach((content, contentIndex) => {
+      var vm = this
+      if (containerIndex > -1 && containerIndex < vm.contentContainer.length) {
+        vm.$nextTick(() => {
+          vm.contentContainer[containerIndex].forEach((content, contentIndex) => {
             const slideID = `#slide-${containerIndex}-${contentIndex}`;
-            const slide = this.$el.querySelector(slideID);
+            const slide = vm.$el.querySelector(slideID);
             const offset = contentIndex * 7;
             const hue = (containerIndex * 20) % 360;
-            this.setStyleProperty(slide, { 'background-color': `hsl(${hue},${40 + offset}%,${50 + offset}%)` });
+            var imagePath
+           	try {
+            	imagePath = require('../assets/storage/movies/images/1920x1080/'+content.movieId+'.jpg')
+           	}
+           	catch(err) {
+	            imagePath = require('../assets/storage/movies/images/1920x1080/image_not_found.jpg')
+           	}
+            vm.setStyleProperty(slide, {'background-image': 'url('+imagePath+')'})
+            vm.setStyleProperty(slide, {'background-size' : 'cover'})
+            vm.setStyleProperty(slide, {'background-repeat' : 'no-repeat'})
           });
+          
           if (callback) {
             callback();
           }
@@ -248,7 +268,7 @@ export default {
   mounted() {
     this.$el.style.setProperty('--ratio', `${this.ratio}`);
     this.slideContainer.forEach((container) => {
-      this.setColor(container);
+      this.setImageSlide(container);
     });
     window.addEventListener('resize', _.debounce(this.resetContentContainer, 150));
   },
@@ -367,6 +387,9 @@ $slider-width: $slider-container-width *3;
   transition: transform var(--duration) var(--cubic-bezier);
   will-change: transform;
   // box-sizing: border-box;
+}
+.slide, .slide-button{
+  cursor: pointer;
 }
 
 /* Slider Transition*/

@@ -9,8 +9,8 @@ import MultiLanguage from 'vue-multilanguage'
 import FontAwesome from 'font-awesome/css/font-awesome.min.css'
 import vueTopprogress from 'vue-top-progress'
 import VueSweetAlert from 'vue-sweetalert'
-
 import BootstrapVue from 'bootstrap-vue/dist/bootstrap-vue.esm';
+import Vuelidate from 'vuelidate'
 import 'bootstrap/dist/css/bootstrap.css';
 import 'bootstrap-vue/dist/bootstrap-vue.css';
 
@@ -24,7 +24,6 @@ var corsHeaders = {
 
 const routerOptions = [
   { path: '/', component: 'Home' },
-  { path: '/home', component: 'SignIn' },
   { path: '/about', component: 'About' },
   { path: '/recommend', component: 'Recommend' },
   { path: '*', component: 'NotFound' }
@@ -37,6 +36,7 @@ Vue.use(BootstrapVue)
 Vue.use(FontAwesome)
 Vue.use(vueTopprogress)
 Vue.use(VueSweetAlert)
+Vue.use(Vuelidate)
 Vue.use(VueProgressBar, {
   color: 'rgb(255, 255, 255)',
   failedColor: 'red',

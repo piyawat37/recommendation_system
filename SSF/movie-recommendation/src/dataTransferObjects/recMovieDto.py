@@ -9,7 +9,7 @@ import json
 class recMovieDto(object):
 
 
-    def __init__(self, movieId, title, genres, rating=None):
+    def __init__(self=None, movieId=None, title=None, genres=None, rating=None):
         self.movieId = movieId
         self.title = title
         self.genres = genres
@@ -30,7 +30,6 @@ class recMovieDto(object):
     def get_rating(self):
         return self.__rating
 
-
     def set_movie_id(self, value):
         self.__movieId = value
 
@@ -45,7 +44,6 @@ class recMovieDto(object):
 
     def set_rating(self, value):
         self.__rating = value
-
 
     def del_movie_id(self):
         del self.__movieId
@@ -67,8 +65,7 @@ class recMovieDto(object):
             'movieId': self.movieId,
             'title': self.title,
             'genres': self.genres,
-            'rating' : self.rating
-#             'sidekick': self.sidekick.to_json() if self.sidekick else None,
+            'rating' : self.rating,
         }
         
     movieId = property(get_movie_id, set_movie_id, del_movie_id, "movieId's docstring")

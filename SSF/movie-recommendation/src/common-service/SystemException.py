@@ -25,3 +25,10 @@ class SystemException(Exception):
         messageError = SystemMessage.Msg['accessDenied-'+language] + ': ' + SystemMessage.Msg['policyAuthen-'+language]
         return  messageError
     
+    '''       '''         '''
+            Duplicate
+    '''       '''         '''
+    def message_duplicate_context(self, context, language):
+        messageError = context + SystemMessage.Msg['duplicate-'+language]
+        return messageError
+        

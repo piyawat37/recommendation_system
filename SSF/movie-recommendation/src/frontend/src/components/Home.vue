@@ -8,14 +8,14 @@
 				<Slider v-bind:id="key" v-bind:data-list="value"/>
 			</div>
 		</transition-group>
-		<!-- <transition-group name="movie-fade" appear mode="out-in">
+		<transition-group name="movie-fade" appear mode="out-in">
 			<div v-for="value, key in movieList" v-if="key == 'Recommended'" v-bind:key="key" style="text-align: left; margin-top: 15px">
 				<label class="control-label">
 					<span v-text="uiLabel.recommended"></span>
 				</label>
 				<Slider v-bind:id="key" v-bind:data-list="value"/>
 			</div>
-		</transition-group> -->
+		</transition-group>
 		<transition-group name="movie-fade" appear mode="out-in">
 			<div v-for="value, key in movieList" v-if="key != 'movieTopRate' && key != 'Recommended'" v-bind:key="key" style="text-align: left; margin-top: 15px">
 				<label class="control-label">

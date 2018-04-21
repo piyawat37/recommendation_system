@@ -110,7 +110,7 @@ def signUp():
             }
         else:
             return check_duplicate_user(data['username'], data['email'], data['language'])
-        return response
+        return jsonify(response)
 
 @app.route("/logout")
 @login_required
@@ -152,12 +152,14 @@ def movie_service_pom():
     }
     return jsonify(response)
 
-@app.route('/movie-service/getMovieByUserId/', methods=['GET'])
+@app.route('/movie-service/getMovie/', methods=['GET'])
 def recommend_movie_list():
-    userId = int(request.args.get("id"))
-    lang = request.args.get("language")
-    session['lang'] = lang
-    movieList = movie_service.transform_dataFrame(userId)
+    try:
+        userId = int(request.args.get("id"))
+        movieList = movie_service.transform_dataFrame(userId)
+    except:
+        movieList = movie_service.transform_dataFrame()
+        
     response = {
         'movieList': movieList
     }
@@ -177,7 +179,5 @@ def catch_all(path):
     if app.debug:
         return requests.get('http://localhost:8080/{}'.format(path)).text
     return render_template("index.html")
-
-
 
 app.run();

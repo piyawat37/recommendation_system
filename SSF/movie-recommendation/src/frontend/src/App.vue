@@ -126,8 +126,8 @@
        		</b-container>
 		</b-modal>
         <!-- for router view -->
-        {{$v}}
         <router-view v-if="progress == false"></router-view>
+        <footer-master></footer-master>
     </div>
 </template>
 
@@ -139,6 +139,7 @@ import auth from './auth/'
 import $ from 'jquery'
 import { validationMixin } from "vuelidate"
 import { required, minLength, sameAs } from "vuelidate/lib/validators"
+import footerMaster from './components/Footer'
 export default {
   name: 'app',
   data () {
@@ -184,7 +185,7 @@ export default {
 		this.language = lang == 'EN' ? 'TH' : 'EN' 
 		this.$Progress.start()
 		this.uiLabel = require("./i18n/app-master-"+this.language+".json")
-		this.$children[4].setUiLabel(this.language)
+		this.$children[6].setUiLabel(this.language)
 		this.$Progress.decrease(10)
 		this.$Progress.finish()
 	},
@@ -328,12 +329,23 @@ export default {
 	  var vm = this
 	  if(!localStorage.getItem('token')){
 	  	vm.$router.push('/')
+	  	vm.$http.get(configService.movieService + '/getMovie/').then(response => {
+	      // get body data
+			vm.movieList = response.body.movieList
+			vm.$Progress.decrease(10)
+			vm.$Progress.finish()
+			vm.progress = false
+	    }, response => {
+	      // error callback
+			vm.$Progress.fail()
+			vm.progress = false
+	    });
 	  }else{
 	 	vm.$Progress.start()
 		vm.$http.post(configService.userService + '/authenByToken', {token: localStorage.getItem('token')}).then(response => {
 		  // get body data
 			vm.user_token = response.body.user
-			vm.$http.get(configService.movieService + '/getMovieByUserId/', {params: {id: this.user_token.userId, language: localStorage['vue-lang']}}).then(response => {
+			vm.$http.get(configService.movieService + '/getMovie/', {params: {id: this.user_token.userId}}).then(response => {
 		      // get body data
 				vm.movieList = response.body.movieList
 				vm.$Progress.decrease(10)
@@ -352,7 +364,8 @@ export default {
 	  }
   },
   components: {
-    vueTopprogress
+    vueTopprogress,
+    footerMaster
   },
   beforeDestroy() {
     window.removeEventListener('resize', this.getWindowWidth);

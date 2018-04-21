@@ -23,7 +23,7 @@ db = _connect_mongo(host='localhost', port=27017, username=None, password=None, 
 def pom_version():
     pom = pomServiceDto('user-service',
                   '0.0.1-PRODUCTION',
-                  '0.0.8-PROTOTYPE',
+                  '0.0.9-PROTOTYPE',
                   'Created on Feb 10, 2018',
                   'Piyawat Pemwattana')
     return pom
@@ -128,8 +128,7 @@ def create_new_user(user_data):
         db.users.insert_one(userRepoObj.to_JSON())
         userObj = db['users'].find_one({'userId' : userId})
         userServiceObj = userServiceDto(userId=userObj['userId'],email=userObj['email'],username=userObj['username'],status=userObj['status'], is_authenticated=True,token=userObj['token'])
-        print(userServiceObj.toJSON())
-        return userServiceObj.toJSON()
+        return userServiceObj
     else:
         return check_duplicate_user(user_data['username'], user_data['email'], user_data['language'])
     

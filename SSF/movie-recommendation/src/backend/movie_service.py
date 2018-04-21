@@ -19,7 +19,7 @@ from recMovieDto import recMovieDto
 def pom_version():
     pom = pomServiceDto('movie-service',
                   '0.0.1-PRODUCTION',
-                  '0.0.8-PROTOTYPE',
+                  '0.0.9-PROTOTYPE',
                   'Created on Dec 11, 2018',
                   'Piyawat Pemwattana')
     return pom
@@ -80,7 +80,7 @@ def recommend_movies(predictions_df, userID, movies_df, original_ratings_df, use
 def get_movies_top_rate(movies, users, ratings):
     merge_ratings_user = pd.merge(ratings,users, on = 'userId')
     movie_data = pd.merge(movies,merge_ratings_user, on = 'movieId').filter(items=['movieId', 'title', 'genres', 'rating'])
-    movie_top_rate = movie_data.groupby(['movieId','title', 'genres'], as_index=False).mean().sort_values('rating', ascending = False).head(SystemConstant.RANGE_OF_CATEGORY)
+    movie_top_rate = movie_data.groupby(['movieId','title', 'genres'], as_index=False).mean().sort_values('rating', ascending = False)
     return movie_top_rate
 
 def get_movies_classify_by_prediction(genres, predic, range):
@@ -156,9 +156,17 @@ def transform_dataFrame(id=None):
             for index, row in movies_top.iterrows():
                 movieObj = recMovieDto(row['movieId'], row['title'], row['genres'], row['rating'])
                 movie_list.append(movieObj.toJSON())
-            
             movieServiceObj['movieTopRate'] = movie_list
+        for genres in SystemConstant.GENRES:
+                movie_list = []
+                movie_list_filter_genres = get_movies_classify_by_prediction(genres, movies_top, SystemConstant.RANGE_OF_CATEGORY)
+                if(len(movie_list_filter_genres) > 17):
+                    for index, row in movie_list_filter_genres.iterrows():
+                        movieObj = recMovieDto(row['movieId'], row['title'], row['genres'])
+                        movie_list.append(movieObj.toJSON())
+                if len(movie_list) > 0 :
+                    movieServiceObj[genres] = movie_list    
         return movieServiceObj
 
-movies_top = transform_dataFrame(1)
+movies_top = transform_dataFrame()
 print(movies_top)

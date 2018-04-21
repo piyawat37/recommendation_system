@@ -105,13 +105,11 @@ def signUp():
         print(data['language'])
         if check_duplicate_user(data['username'], data['email'], data['language']) == False:
             userObj = user_service.create_new_user(user_data=data)
+            response = {
+                'user' : userObj.toJSON()
+            }
         else:
             return check_duplicate_user(data['username'], data['email'], data['language'])
-            
-        
-        response = {
-            'user' : userObj.toJSON()
-        }
         return response
 
 @app.route("/logout")

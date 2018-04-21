@@ -4,6 +4,7 @@ Created on Feb 10, 2018
 @author: Piyawat Pemwattana
 '''
 import secrets
+import time
 
 from flask import Response
 import pymongo
@@ -14,6 +15,7 @@ from SystemMessage import SystemMessage
 from connectMongoDB import _connect_mongo
 from pomServiceDto import pomServiceDto
 from userServiceDto import userServiceDto
+from userServiceRepository import userServiceRepository
 
 
 db = _connect_mongo(host='localhost', port=27017, username=None, password=None, db='recommendation_system')
@@ -30,7 +32,8 @@ def data_test():
     return {
         'email' : 'email@email.com',
         'username' : 'adminnn',
-        'password' : 'password'
+        'password' : 'password',
+        'language' : 'EN'
     }
     
 def data_test_token():
@@ -96,7 +99,6 @@ def check_duplicate_user(username, email, language):
         try:
             raise SystemException(SystemException.message_duplicate_context(None, SystemMessage.Msg['emailException-'+language], language))
         except SystemException as error:
-            print(error)
             resp = Response({SystemException.message_duplicate_context(None, SystemMessage.Msg['emailException-'+language], language)}, status=400, mimetype='application/json')
             return resp
         
@@ -104,7 +106,6 @@ def check_duplicate_user(username, email, language):
         try:
             raise SystemException(SystemException.message_duplicate_context(None, SystemMessage.Msg['usernameException-'+language], language))
         except SystemException as error:
-            print(error)
             resp = Response({SystemException.message_duplicate_context(None, SystemMessage.Msg['usernameException-'+language], language)}, status=400, mimetype='application/json')
             return resp
     
@@ -112,15 +113,25 @@ def check_duplicate_user(username, email, language):
     return isDuplicate
 
 def create_new_user(user_data):
-    userGetMax = db.users.find().sort('userId', -1).limit(1)
-    userId = ''
-    for cursor in userGetMax:
-        userId = int(cursor['userId'])
-    userObj = userServiceDto(userId=userId+1
-                 , email=user_data['email']
-                 , username=user_data['username']
-                 , status=SystemConstant.STATUS_A
-                 , is_authenticated=True
-                 , token=secrets.token_urlsafe())
+    if check_duplicate_user(user_data['username'], user_data['email'], user_data['language']) == False:
+        userGetMax = db.users.find().sort('userId', -1).limit(1)
+        userId = ''
+        for cursor in userGetMax:
+            userId = int(cursor['userId'])+1
+        userRepoObj = userServiceRepository(userId=userId
+                     , email=user_data['email']
+                     , username=user_data['username']
+                     , password=set_hsh_password(user_data['password'])
+                     , status=SystemConstant.STATUS_A
+                     , token=secrets.token_urlsafe()
+                     , timestamp="%d " %  time.time())
+        db.users.insert_one(userRepoObj.to_JSON())
+        userObj = db['users'].find_one({'userId' : userId})
+        userServiceObj = userServiceDto(userId=userObj['userId'],email=userObj['email'],username=userObj['username'],status=userObj['status'], is_authenticated=True,token=userObj['token'])
+        print(userServiceObj.toJSON())
+        return userServiceObj.toJSON()
+    else:
+        return check_duplicate_user(user_data['username'], user_data['email'], user_data['language'])
     
-create_new_user(data_test)
+    
+# create_new_user(data_test())

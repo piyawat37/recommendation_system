@@ -26,7 +26,10 @@ try:
     for each in reader_movies:
         row={}
         for field in header_movies:
-            row[field]=each[field]
+            if field=="movieId":
+                row[field]=int(each[field])
+            else: 
+                row[field]=each[field]
      
         db.movies.insert(row)
     print("Movies Success!!")
@@ -45,7 +48,10 @@ try:
     for each in reader_users:
         row={}
         for field in header_users:
-            row[field]=each[field]
+            if field=="userId":
+                row[field]=int(each[field])
+            else: 
+                row[field]=each[field]
      
         db.users.insert(row)
     print("Users Success!!")
@@ -63,7 +69,10 @@ try:
     for each in reader_ratings:
         row={}
         for field in header_ratings:
-            row[field]=each[field]
+            if field=="userId" or field=="movieId":
+                row[field]=int(each[field])
+            else: 
+                row[field]=each[field]
      
         db.ratings.insert(row)
     print("Ratings Success!!")

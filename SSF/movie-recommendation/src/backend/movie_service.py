@@ -5,7 +5,7 @@ Created on Dec 11, 2017
 '''
 #Defined Version
 
-from pandas import json
+import pandas
 
 from QLearning import QLearningTable
 from SystemConstant import SystemConstant

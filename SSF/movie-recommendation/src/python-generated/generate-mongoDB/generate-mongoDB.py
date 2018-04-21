@@ -60,7 +60,7 @@ except:
  
  
 # Ratings
-ratings_csv_file = open(BASEDIR+'ratings_test.csv', 'r', encoding="utf8")
+ratings_csv_file = open(BASEDIR+'ratings_sample_data.csv', 'r', encoding="utf8")
 reader_ratings = csv.DictReader(ratings_csv_file)
 db.ratings.drop()
 header_ratings = [ "userId", "movieId", "rating", "timestamp" ]

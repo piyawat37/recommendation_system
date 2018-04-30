@@ -101,13 +101,16 @@ except:
 permissions_csv_file = open(BASEDIR+'permissions.csv', 'r', encoding="utf8")
 reader_permissions = csv.DictReader(permissions_csv_file)
 db.permissions.drop()
-header_permissions = [ "userId", "permObj" ]
+header_permissions = [ "userId", "role" ]
  
 try:
     for each in reader_permissions:
         row={}
         for field in header_permissions:
-            row[field]=each[field]
+            if field=="userId":
+                row[field]=int(each[field])
+            else: 
+                row[field]=each[field]
      
         db.permissions.insert(row)
     print("Permissions Success!!")

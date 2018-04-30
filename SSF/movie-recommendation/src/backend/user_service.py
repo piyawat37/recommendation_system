@@ -16,22 +16,24 @@ from connectMongoDB import _connect_mongo
 from pomServiceDto import pomServiceDto
 from userServiceDto import userServiceDto
 from userServiceRepository import userServiceRepository
+from permissionsServiceRepository import permissionServiceRepository
+from usersDto import usersDto
 
 
 db = _connect_mongo(host='localhost', port=27017, username=None, password=None, db='recommendation_system')
 
 def pom_version():
     pom = pomServiceDto('user-service',
-                  '0.0.1-PRODUCTION',
-                  '0.0.9-PROTOTYPE',
+                  '1.0.0',
+                  '0.0.10-PROTOTYPE',
                   'Created on Feb 10, 2018',
                   'Piyawat Pemwattana')
     return pom
     
 def data_test():
     return {
-        'email' : 'email@email.com',
-        'username' : 'adminnn',
+        'email' : 'email1@email.com',
+        'username' : 'adminnn1',
         'password' : 'password',
         'language' : 'EN'
     }
@@ -63,12 +65,14 @@ def user_validate_login(user_data):
             is_authenticated = True
             db['users'].find_one_and_update({'userId':user['userId']}, {'$set': {'token': secrets.token_urlsafe()}})
             user = db['users'].find_one({'username' : user_data['username']})
+            user_map_role = db['permissions'].find_one({'userId' : user['userId']})
             userObj = userServiceDto(userId=user['userId']
                                  , email=user['email']
                                  , username=user['username']
                                  , status=user['status']
                                  , is_authenticated=is_authenticated
-                                 , token=user['token'])
+                                 , token=user['token']
+                                 , role=user_map_role['role'])
         return userObj
     else:
         userObj = userServiceDto(userId=None,
@@ -76,11 +80,13 @@ def user_validate_login(user_data):
                                    username=user_data['username'],
                                     status=None,
                                      is_authenticated=is_authenticated,
-                                      token=None)
+                                      token=None,
+                                        role=None)
         return userObj
         
 def get_user_by_token(access):
     user = db['users'].find_one({'token' : access['token']})
+    user_map_role = db['permissions'].find_one({'userId' : user['userId']})
     is_authenticated = False
     if user != None:
         is_authenticated = True
@@ -89,7 +95,8 @@ def get_user_by_token(access):
                  , username=user['username']
                  , status=user['status']
                  , is_authenticated=is_authenticated
-                 , token=user['token'])
+                 , token=user['token']
+                 , role=user_map_role['role'])
         return userObj
     
 def check_duplicate_user(username, email, language):
@@ -127,10 +134,62 @@ def create_new_user(user_data):
                      , timestamp="%d " %  time.time())
         db.users.insert_one(userRepoObj.to_JSON())
         userObj = db['users'].find_one({'userId' : userId})
-        userServiceObj = userServiceDto(userId=userObj['userId'],email=userObj['email'],username=userObj['username'],status=userObj['status'], is_authenticated=True,token=userObj['token'])
+        permissionRepoObj = permissionServiceRepository(userId=userObj['userId']
+                                                        , role=SystemConstant.ROLE_USER)
+        db.permissions.insert_one(permissionRepoObj.to_JSON())
+        user_role = db['permissions'].find_one({'userId': userId})
+        userServiceObj = userServiceDto(userId=userObj['userId'],email=userObj['email'],username=userObj['username'],status=userObj['status'], is_authenticated=True,token=userObj['token'], role=user_role['role'])
         return userServiceObj
     else:
         return check_duplicate_user(user_data['username'], user_data['email'], user_data['language'])
-    
-    
+
+def create_new_user_generate_password(user_data):
+    if check_duplicate_user(user_data['username'], user_data['email'], user_data['language']) == False:
+        userGetMax = db.users.find().sort('userId', -1).limit(1)
+        userId = ''
+        for cursor in userGetMax:
+            userId = int(cursor['userId'])+1
+        userRepoObj = userServiceRepository(userId=userId
+                     , email=user_data['email']
+                     , username=user_data['username']
+                     , password=set_hsh_password('password')
+                     , status=SystemConstant.STATUS_A
+                     , token=secrets.token_urlsafe()
+                     , timestamp="%d " %  time.time())
+        db.users.insert_one(userRepoObj.to_JSON())
+        userObj = db['users'].find_one({'userId' : userId})
+        permissionRepoObj = permissionServiceRepository(userId=userObj['userId']
+                                                        , role=SystemConstant.ROLE_USER)
+        db.permissions.insert_one(permissionRepoObj.to_JSON())
+        user_role = db['permissions'].find_one({'userId': userId})
+        userServiceObj = userServiceDto(userId=userObj['userId'],email=userObj['email'],username=userObj['username'],status=userObj['status'], is_authenticated=True,token=userObj['token'], role=user_role['role'])
+        return userServiceObj
+    else:
+        return check_duplicate_user(user_data['username'], user_data['email'], user_data['language'])
+
+def get_all_user():
+    users = db['users']
+    usersList = []
+    cursor = users.find({})
+    for value in cursor:
+        userDto = usersDto(value['userId'], value['email'], value['username'], value['status'])
+        usersList.append(userDto.to_JSON())
+    return usersList
+
+def update_user(userContext):
+    db['users'].find_one_and_update({'userId':userContext['userId']}, {'$set': {'status': userContext['status']}})
+    user = db['users'].find_one({'username' : userContext['username']})
+    userObjDto = userServiceDto(userId=user['userId']
+                                , email=user['email']
+                                , username=user['username']
+                                , status=user['status']
+                                , is_authenticated=None
+                                , token=None
+                                , role=None)
+    return userObjDto
+
+def delete_user(userId):
+    db.users.delete_one({'userId':userId})
+
 # create_new_user(data_test())
+# delete_user(7)

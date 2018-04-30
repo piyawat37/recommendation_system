@@ -19,7 +19,6 @@
 <script>
 /* eslint-disable */
 import axios from 'axios'
-import CallDialogLink from './CallDialogLink.vue';
 import uiLabel from '../i18n/home-EN.json'
 export default {
   data () {

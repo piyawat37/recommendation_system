@@ -8,6 +8,7 @@
 	"signUp" : "สมัครสมาชิก",
 	"signOut" : "ออกจากระบบ",
 	"manageAccount" : "จัดการบัญชี",
+	"manageMovie" : "จัดการภาพยนตร์",
 	"langEN" : "EN",
 	"langTH" : "TH",
 	"signInBtn" : "เข้าสู่ระบบ",
@@ -18,6 +19,6 @@
 	"email": "อีเมล",
 	"rePassword": "ยืนยันรหัสผ่าน",
 	"forgot": "ลืมรหัสผ่าน ?",
-	
+	"changePassword": "เปลี่ยนรหัสผ่าน",
 	"require" : "กรุณากรอกชื่อผู้ใช้และรหัสผ่านของคุณ"
 }

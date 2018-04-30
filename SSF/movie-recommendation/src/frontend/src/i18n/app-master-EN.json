@@ -8,6 +8,7 @@
 	"signUp" : "Sign up",
 	"signOut" : "Sign out",
 	"manageAccount" : "Manage Account",
+	"manageMovie" : "Manage Movie",
 	"langEN" : "EN",
 	"langTH" : "TH",
 	"signInBtn" : "SIGN IN",
@@ -18,6 +19,6 @@
 	"password": "Password",
 	"rePassword": "Re-password",
 	"forgot": "forgot your password ?",
-	
+	"changePassword": "Change Password",
 	"require" : "Please input your username and password."
 }

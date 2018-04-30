@@ -14,12 +14,13 @@ import numpy as np
 import pandas as pd
 from pomServiceDto import pomServiceDto
 from recMovieDto import recMovieDto
+from numpy import delete
 
 
 def pom_version():
     pom = pomServiceDto('movie-service',
-                  '0.0.1-PRODUCTION',
-                  '0.0.9-PROTOTYPE',
+                  '1.0.0',
+                  '0.0.10-PROTOTYPE',
                   'Created on Dec 11, 2018',
                   'Piyawat Pemwattana')
     return pom
@@ -168,5 +169,26 @@ def transform_dataFrame(id=None):
                     movieServiceObj[genres] = movie_list    
         return movieServiceObj
 
-movies_top = transform_dataFrame()
-print(movies_top)
+def get_all_movie():
+    movies = db['movies']
+    movieList = []
+    cursor = movies.find({})
+    for value in cursor:
+        movieDto = recMovieDto(movieId=value['movieId'],title=value['title'],genres=value['genres'])
+        movieList.append(movieDto.to_JSON_DataTable())
+    return movieList
+
+def update_movie(movieContext):
+    db['movies'].find_one_and_update({'movieId':movieContext['movieId']}, {'$set': {'title': movieContext['title'], 'genres': movieContext['genres']}})
+    movie = db['movies'].find_one({'movieId' : movieContext['movieId']})
+    movieObjDto = recMovieDto(movieId=movie['movieId']
+                              , title=movie['title']
+                              , genres=movie['genres']
+                              , rating=None)
+    return movieObjDto
+
+def delete_movie(movieId):
+    db.movies.delete_one({'movieId':movieId})
+
+# movies_top = transform_dataFrame()
+# print(movies_top)

@@ -1,0 +1,17 @@
+{
+	"screenTitle":"Account Management",
+	"filter" : "Filter",
+	"sort" : "Sort",
+	"perPage" : "Per Page",
+	"clear" : "Clear",
+	"orderASC": "Asc",
+	"orderDESC": "Desc",
+	"createAccount": "Create Account",
+	"username": "Username",
+	"email": "E-mail",
+	"status": "Status",
+	"role": "Role",
+	"editpanel": "Edit Account",
+	"submit": "Submit",
+	"cancel": "Cancel"
+}

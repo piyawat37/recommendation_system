@@ -11,8 +11,11 @@ import vueTopprogress from 'vue-top-progress'
 import VueSweetAlert from 'vue-sweetalert'
 import BootstrapVue from 'bootstrap-vue/dist/bootstrap-vue.esm';
 import Vuelidate from 'vuelidate'
+import Datatable from 'vue2-datatable-component'
 import 'bootstrap/dist/css/bootstrap.css';
 import 'bootstrap-vue/dist/bootstrap-vue.css';
+import ToggleButton from 'vue-js-toggle-button'
+import Icon from 'vue-awesome/components/Icon'
 
 var corsHeaders = {
 	  origin: ["*"],
@@ -25,7 +28,8 @@ var corsHeaders = {
 const routerOptions = [
   { path: '/', component: 'Home' },
   { path: '/about', component: 'About' },
-  { path: '/recommend', component: 'Recommend' },
+  { path: '/accountmgt', component: 'manage-account' },
+  { path: '/moviemgt', component: 'manage-movie' },
   { path: '*', component: 'NotFound' }
 ]
 Vue.use(Router)
@@ -37,6 +41,9 @@ Vue.use(FontAwesome)
 Vue.use(vueTopprogress)
 Vue.use(VueSweetAlert)
 Vue.use(Vuelidate)
+Vue.use(Datatable)
+Vue.use(ToggleButton)
+Vue.component('icon', Icon)
 Vue.use(VueProgressBar, {
   color: 'rgb(255, 255, 255)',
   failedColor: 'red',

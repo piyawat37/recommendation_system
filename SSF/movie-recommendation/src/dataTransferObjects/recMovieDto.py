@@ -67,6 +67,20 @@ class recMovieDto(object):
             'genres': self.genres,
             'rating' : self.rating,
         }
+    
+    def to_JSON_DataTable(self):
+        return {
+            'movieId': self.movieId,
+            'title': self.title,
+            'genres': self.genres,
+        } 
+    
+    def to_JSON_Update(self):
+        return {
+            'movieId': self.movieId,
+            'title': self.title,
+            'genres': self.genres,
+        } 
         
     movieId = property(get_movie_id, set_movie_id, del_movie_id, "movieId's docstring")
     title = property(get_title, set_title, del_title, "title's docstring")

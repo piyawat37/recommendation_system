@@ -6,13 +6,14 @@ Created on Apr 1, 2018
 
 class userServiceDto(object):
 
-    def __init__(self, userId, email, username, status, is_authenticated, token):
+    def __init__(self, userId, email, username, status, is_authenticated, token, role):
         self.userId = userId
         self.email = email
         self.username = username
         self.status = status
         self.is_authenticated = is_authenticated
         self.token = token
+        self.role = role
 
     def get_user_id(self):
         return self.__userId
@@ -36,6 +37,10 @@ class userServiceDto(object):
 
     def get_token(self):
         return self.__token
+
+
+    def get_role(self):
+        return self.__role
 
 
     def set_user_id(self, value):
@@ -62,6 +67,10 @@ class userServiceDto(object):
         self.__token = value
 
 
+    def set_role(self, value):
+        self.__role = value
+
+
     def del_user_id(self):
         del self.__userId
 
@@ -85,15 +94,9 @@ class userServiceDto(object):
     def del_token(self):
         del self.__token
 
-    def toJSON(self):
-        return {
-            'userId': self.userId,
-            'email': self.email,
-            'username': self.username,
-            'status': self.status,
-            'is_authenticated': self.is_authenticated,
-            'token': self.token
-        }
+
+    def del_role(self):
+        del self.__role
 
     userId = property(get_user_id, set_user_id, del_user_id, "userId's docstring")
     email = property(get_email, set_email, del_email, "email's docstring")
@@ -101,4 +104,23 @@ class userServiceDto(object):
     status = property(get_status, set_status, del_status, "status's docstring")
     is_authenticated = property(get_is_authenticated, set_is_authenticated, del_is_authenticated, "is_authenticated's docstring")
     token = property(get_token, set_token, del_token, "token's docstring")
-        
+    role = property(get_role, set_role, del_role, "role's docstring")
+
+    def toJSON(self):
+        return {
+            'userId': self.userId,
+            'email': self.email,
+            'username': self.username,
+            'status': self.status,
+            'is_authenticated': self.is_authenticated,
+            'token': self.token,
+            'role': self.role
+        }
+    
+    def toJSON_UpdateStatus(self):
+        return {
+            'userId': self.userId,
+            'email': self.email,
+            'username': self.username,
+            'status': self.status,
+        }

@@ -9,6 +9,8 @@ class SystemConstant:
     POST_SALT = 'rec'
     STATUS_A = 'A'
     STATUS_I = 'I'
+    ROLE_ADMIN = 'admin'
+    ROLE_USER = 'user'
     RANGE_OF_PREDICTION = 200;
     RANGE_OF_CATEGORY = 18;
     GENRES = ['Adventure',

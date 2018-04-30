@@ -14,9 +14,10 @@ from flask_login.utils import login_required, login_user, logout_user
 import requests, os
 
 import movie_service
-from userServiceDto import userServiceDto
 import user_service
+import common_service
 import json
+from userServiceDto import userServiceDto
 from SystemException import SystemException
 from SystemConstant import SystemConstant
 from user_service import get_user_by_token, check_duplicate_user
@@ -34,12 +35,29 @@ app.secret_key = os.urandom(24)
 
 exception = {}
 
-@app.route('/user-service/getpost', methods = ['POST', 'GET'])
-def postGetHandler():
-    if request.method == 'POST':
-        return 'request via POST'
-    else:
-        return 'request via GET'
+
+@app.route('/common-service/')
+def common_service_pom():
+    pom = common_service.pom_version()
+    response = {
+        'msg' : '{'+pom.service+', '
+                +pom.version+', '
+                +pom.poc_version+', '
+                +pom.create_date+', '
+                +pom.author+', '
+                '}'
+    }
+    return jsonify(response)
+
+@app.route('/common-service/getVersion/', methods=['GET'])
+def common_service_version():
+    pom = common_service.pom_version()
+    response = {
+        'version': pom.version,
+        'poc_version': pom.poc_version
+    }
+    return jsonify(response)
+
 
 @app.route('/common-service/getLang/<language>', methods=['GET'])
 def set_language(language=None):
@@ -57,11 +75,11 @@ def user_service_pom():
     pom = user_service.pom_version()
     response = {
         'msg' : '{'+pom.service+', '
-                +pom.version+', '
+              +pom.version+', '
                 +pom.poc_version+', '
                 +pom.create_date+', '
                 +pom.author+', '
-                '}'
+                '}'  
     }
     return jsonify(response)
 # somewhere to login
@@ -111,6 +129,47 @@ def signUp():
         else:
             return check_duplicate_user(data['username'], data['email'], data['language'])
         return jsonify(response)
+    
+@app.route("/user-service/createAccount", methods = ['POST', 'GET'])
+def create_new_account():
+    if request.method == 'POST':
+        data = json.loads(request.data)
+        response = {}
+        if check_duplicate_user(data['username'], data['email'], data['language']) == False:
+            userObj = user_service.create_new_user_generate_password(user_data=data)
+            response = {
+                'user' : userObj.toJSON()
+            }
+        else:
+            return check_duplicate_user(data['username'], data['email'], data['language'])
+        return jsonify(response)
+
+@app.route('/user-service/getAllUser/', methods=['GET'])
+def get_all_user():
+    users = user_service.get_all_user()
+    response = {
+        'users' : users
+    }
+    print(response)
+    return jsonify(response)
+
+@app.route('/user-service/deleteAccount/<int:userId>/', methods=['DELETE'])
+def delete_user(userId):
+    user_service.delete_user(userId)
+    response = {
+    }
+    return jsonify(response)
+
+@app.route("/user-service/updateStatus", methods = ['POST', 'GET'])
+def updateStatus():
+    if request.method == 'POST':
+        data = json.loads(request.data)
+        response = {}
+        userObj = user_service.update_user(userContext=data)
+        response = {
+            'user' : userObj.toJSON_UpdateStatus()
+        }
+        return jsonify(response)
 
 @app.route("/logout")
 @login_required
@@ -129,7 +188,10 @@ def load_user(userId):
 @app.route("/user-service/authenByToken", methods = ['POST', 'GET'])
 def getUserByToken():
     data = json.loads(request.data)
-    userObj = get_user_by_token(data)
+    try:
+        userObj = get_user_by_token(data)
+    except:
+        return Response({"Access Denined: Please, Sign in"}, status=400, mimetype='application/json')
     response ={
         'user' : userObj.toJSON()
     }
@@ -172,6 +234,33 @@ def find_list_by_genres(genres):
     }
     return jsonify(response)
 
+@app.route('/movie-service/getAllMovie/', methods=['GET'])
+def get_all_movie():
+    movies = movie_service.get_all_movie()
+    response = {
+        'movies' : movies
+    }
+    print(response)
+    return jsonify(response)
+
+@app.route("/movie-service/update", methods = ['POST', 'GET'])
+def update_movie():
+    if request.method == 'POST':
+        data = json.loads(request.data)
+        response = {}
+        movieObj = movie_service.update_movie(movieContext=data)
+        response = {
+            'movie' : movieObj.to_JSON_Update()
+        }
+        return jsonify(response)
+
+@app.route('/movie-service/deleteMovie/<int:movieId>/', methods=['DELETE'])
+def delete_movie(movieId):
+    movie_service.delete_movie(movieId)
+    response = {
+    }
+    return jsonify(response)
+
 
 @app.route('/', defaults={'path': ''})
 @app.route('/<path:path>')
@@ -180,4 +269,5 @@ def catch_all(path):
         return requests.get('http://localhost:8080/{}'.format(path)).text
     return render_template("index.html")
 
-app.run();
+if __name__ == "__main__":
+    app.run()

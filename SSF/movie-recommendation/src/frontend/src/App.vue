@@ -10,20 +10,31 @@
 		      <b-nav-item href="#"><span v-text="uiLabel.home"></span></b-nav-item>
 		      <b-nav-item href="#"><span v-text="uiLabel.movies"></span></b-nav-item>
 		      <b-nav-item href="#"><span v-text="uiLabel.publicFavorite"></span></b-nav-item>
-		      <b-nav-item href="#"><span v-text="uiLabel.contactUs"></span></b-nav-item>
 		    </b-navbar-nav>
 		    
 		    <!-- Right aligned nav items -->
 		    <b-navbar-nav class="ml-auto">
 				<b-navbar-nav v-if="!tokenStorage">
-			      <b-nav-item href="#" v-b-modal.signIn><span v-text="uiLabel.signIn"></span></b-nav-item>
-			      <b-nav-item href="#" v-b-modal.signUp><span v-text="uiLabel.signUp"></span></b-nav-item>
+			      <b-nav-item href="#" v-b-modal.signIn style="white-space:nowrap !important;"><span v-text="uiLabel.signIn"></span></b-nav-item>
+			      <b-nav-item href="#" v-b-modal.signUp style="white-space:nowrap !important;"><span v-text="uiLabel.signUp"></span></b-nav-item>
 			    </b-navbar-nav>
 			    <b-navbar-nav v-if="tokenStorage">
-			      <b-nav-item><span v-text="user_token.username"></span></b-nav-item>
-			      <b-nav-item href="#"><span v-text="uiLabel.signOut" v-on:click="signOut()"></span></b-nav-item>
+			      <b-nav-item-dropdown :text="user_token.username" right>
+			        <b-dropdown-item v-if= "user_token.role === 'admin'">
+			        	<router-link to="/moviemgt" tag="div">
+						    <i class="fa fa-cog" aria-hidden="true"></i> <span v-text="uiLabel.manageMovie"></span>
+						</router-link>
+			        </b-dropdown-item>
+			        <b-dropdown-item v-if= "user_token.role === 'admin'">
+			        	<router-link to="/accountmgt" tag="div">
+						    <i class="fa fa-cog" aria-hidden="true"></i> <span v-text="uiLabel.manageAccount"></span>
+						</router-link>
+			        </b-dropdown-item>
+			        <b-dropdown-item href="#"><i class="fa fa-key" aria-hidden="true"></i> <span v-text="uiLabel.changePassword"></span></b-dropdown-item>
+			        <b-dropdown-item href="#" v-on:click="signOut()"><i class="fa fa-sign-out" aria-hidden="true"></i> <span v-text="uiLabel.signOut"></span></b-dropdown-item>
+			      </b-nav-item-dropdown>
 			    </b-navbar-nav>
-				<b-button :size="size" :variant="variant" v-on:click="changeLanguage(language)" v-lang.sym></b-button>
+				<b-button :size="size" :variant="variant" v-on:click="changeLanguage(language)" v-lang.sym style="margin-left: 5%"></b-button>
 		    </b-navbar-nav>
 		  </b-collapse>
 		</b-navbar>
@@ -126,8 +137,8 @@
        		</b-container>
 		</b-modal>
         <!-- for router view -->
-        <router-view v-if="progress == false"></router-view>
-        <footer-master></footer-master>
+        <router-view v-if="!progress"></router-view>
+        <footer-master v-if="!progress"></footer-master>
     </div>
 </template>
 
@@ -135,7 +146,6 @@
 /* eslint-disable */
 import configService from './SystemConstant/config.json'
 import { vueTopprogress } from 'vue-top-progress'
-import auth from './auth/'
 import $ from 'jquery'
 import { validationMixin } from "vuelidate"
 import { required, minLength, sameAs } from "vuelidate/lib/validators"
@@ -182,27 +192,19 @@ export default {
   },
   methods: {
 	changeLanguage (lang){
-		this.language = lang == 'EN' ? 'TH' : 'EN' 
-		this.$Progress.start()
-		this.uiLabel = require("./i18n/app-master-"+this.language+".json")
-		this.$children[6].setUiLabel(this.language)
+		var vm = this
+		vm.language = lang == 'EN' ? 'TH' : 'EN' 
+		vm.$Progress.start()
+		vm.uiLabel = require("./i18n/app-master-"+vm.language+".json")
+		$.each(vm.$children, function(key, value){
+			if(value.setUiLabel){
+				value.setUiLabel(vm.language)
+			}
+		})
+		/* this.$children[5].setUiLabel(this.language) */
 		this.$Progress.decrease(10)
 		this.$Progress.finish()
 	},
-	/* getMovieListByUserId (userId, lang){
-		this.$refs.topProgress.start()
-	    this.$http.get(configService.movieService + '/getMovieByUserId/', {params: {id: userId, language: lang}}).then(response => {
-	      // get body data
-			this.movieList = response.body.movieList
-			this.$Progress.decrease(10)
-			this.$refs.topProgress.done()
-			this.progress = false
-	    }, response => {
-	      // error callback
-			this.$refs.topProgress.fail()
-			this.progress = false
-	    });
-	}, */
 	setSignInButtonSize (){
 		if (window.matchMedia('(max-width: 576px)').matches) {
 	        this.signInSize = 'sm';
@@ -358,8 +360,10 @@ export default {
 		    });
 	    }, response => {
 	      // error callback
-			vm.$refs.topProgress.fail()
+			vm.$Progress.fail()
 			vm.progress = false
+			localStorage.removeItem('token');
+	      	vm.$router.push('/')
 	    });
 	  }
   },
@@ -394,6 +398,9 @@ body{
   margin: 0;
   padding: 0;
   background-color: #191919;
+}
+body, html{
+  height: 100%;
 }
 #app {
   font-family: 'Avenir', Helvetica, Arial, sans-serif;

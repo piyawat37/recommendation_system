@@ -11,6 +11,9 @@
     "build": "node build/build.js"
   },
   "dependencies": {
+    "@fortawesome/fontawesome": "^1.1.5",
+    "@fortawesome/fontawesome-free-solid": "^5.0.10",
+    "@fortawesome/vue-fontawesome": "0.0.22",
     "authentication": "0.0.4",
     "axios": "^0.17.1",
     "bootstrap": "^4.1.0",
@@ -26,8 +29,10 @@
     "validate": "^4.3.0",
     "vue": "^2.5.2",
     "vue-auth": "^1.0.0-alpha.1",
+    "vue-awesome": "^3.0.0",
     "vue-axios": "^2.1.1",
     "vue-event-handler": "^1.1.0",
+    "vue-js-toggle-button": "^1.2.3",
     "vue-lodash": "^2.0.0",
     "vue-multilanguage": "^3.0.5",
     "vue-progressbar": "^0.7.4",
@@ -39,6 +44,7 @@
     "vue-slider-component": "^2.6.2",
     "vue-sweetalert": "^0.1.18",
     "vue-top-progress": "^0.7.0",
+    "vue2-datatable-component": "^2.2.2",
     "vue2-simplert": "^0.8.0",
     "vuelidate": "^0.6.2"
   },

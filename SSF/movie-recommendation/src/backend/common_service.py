@@ -12,8 +12,8 @@ if __name__ == '__main__':
 
 def pom_version():
     pom = pomServiceDto('common-service',
-                  '1.0.0',
-                  '0.0.10-PROTOTYPE',
+                  '1.0.1',
+                  '0.0.11-PROTOTYPE',
                   'Created on Dec 11, 2018',
                   'Piyawat Pemwattana')
     return pom

@@ -1,6 +1,7 @@
 <template>
     <footer>
-        <div>Copyright &copy; 2018 Version {{version}}</div>
+       	<p><b>Copyright &copy; 2018 Version {{version}} Development by</b> <span>Piyawat Pemwattana</span> and <span>Sarawut Ekakoon</span> <b>Supervisor</b> <span>Thanapol Phungtuaeng</span></p>
+       	<p>Rajamangala University of Technology Tawan-Ok : Chakrabongse Bhuvanarth Campus</p>
     </footer>
 </template>
 <script>
@@ -32,12 +33,19 @@ export default {
 </script>
 <style scoped>
 footer{
+	font-size: 11px;
 	position: fixed;
 	width: 100%;
 	bottom: 0;
-	height: 5%;
-    padding: 25px;;
+    padding: 1%;
   	background-color: #151515;
   	z-index: 10;
+}
+footer > p{
+	padding: 0;
+	margin: 0;
+}
+footer > p > span{
+	color: #ff9900;
 }
 </style>

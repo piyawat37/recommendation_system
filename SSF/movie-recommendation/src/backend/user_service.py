@@ -24,8 +24,8 @@ db = _connect_mongo(host='localhost', port=27017, username=None, password=None, 
 
 def pom_version():
     pom = pomServiceDto('user-service',
-                  '1.0.0',
-                  '0.0.10-PROTOTYPE',
+                  '1.0.1',
+                  '0.0.11-PROTOTYPE',
                   'Created on Feb 10, 2018',
                   'Piyawat Pemwattana')
     return pom
@@ -53,18 +53,18 @@ def set_hsh_password(raw_password):
                              +rawPassword.encode(encoding='utf_8')).hexdigest()
         return hsh
 
-def user_validate_login(user_data):
-    user = db['users'].find_one({'username' : user_data['username']})
+def user_validate_login(movie_data):
+    user = db['users'].find_one({'username' : movie_data['username']})
     is_authenticated = False
     #check
     if user != None:
         current_password = user['password']
-        criteria_password = set_hsh_password(raw_password=user_data['password']) 
+        criteria_password = set_hsh_password(raw_password=movie_data['password']) 
         #authen
         if current_password == criteria_password:
             is_authenticated = True
             db['users'].find_one_and_update({'userId':user['userId']}, {'$set': {'token': secrets.token_urlsafe()}})
-            user = db['users'].find_one({'username' : user_data['username']})
+            user = db['users'].find_one({'username' : movie_data['username']})
             user_map_role = db['permissions'].find_one({'userId' : user['userId']})
             userObj = userServiceDto(userId=user['userId']
                                  , email=user['email']
@@ -77,7 +77,7 @@ def user_validate_login(user_data):
     else:
         userObj = userServiceDto(userId=None,
                                   email=None,
-                                   username=user_data['username'],
+                                   username=movie_data['username'],
                                     status=None,
                                      is_authenticated=is_authenticated,
                                       token=None,
@@ -119,16 +119,16 @@ def check_duplicate_user(username, email, language):
     
     return isDuplicate
 
-def create_new_user(user_data):
-    if check_duplicate_user(user_data['username'], user_data['email'], user_data['language']) == False:
+def create_new_user(movie_data):
+    if check_duplicate_user(movie_data['username'], movie_data['email'], movie_data['language']) == False:
         userGetMax = db.users.find().sort('userId', -1).limit(1)
         userId = ''
         for cursor in userGetMax:
             userId = int(cursor['userId'])+1
         userRepoObj = userServiceRepository(userId=userId
-                     , email=user_data['email']
-                     , username=user_data['username']
-                     , password=set_hsh_password(user_data['password'])
+                     , email=movie_data['email']
+                     , username=movie_data['username']
+                     , password=set_hsh_password(movie_data['password'])
                      , status=SystemConstant.STATUS_A
                      , token=secrets.token_urlsafe()
                      , timestamp="%d " %  time.time())
@@ -141,17 +141,17 @@ def create_new_user(user_data):
         userServiceObj = userServiceDto(userId=userObj['userId'],email=userObj['email'],username=userObj['username'],status=userObj['status'], is_authenticated=True,token=userObj['token'], role=user_role['role'])
         return userServiceObj
     else:
-        return check_duplicate_user(user_data['username'], user_data['email'], user_data['language'])
+        return check_duplicate_user(movie_data['username'], movie_data['email'], movie_data['language'])
 
-def create_new_user_generate_password(user_data):
-    if check_duplicate_user(user_data['username'], user_data['email'], user_data['language']) == False:
+def create_new_user_generate_password(movie_data):
+    if check_duplicate_user(movie_data['username'], movie_data['email'], movie_data['language']) == False:
         userGetMax = db.users.find().sort('userId', -1).limit(1)
         userId = ''
         for cursor in userGetMax:
             userId = int(cursor['userId'])+1
         userRepoObj = userServiceRepository(userId=userId
-                     , email=user_data['email']
-                     , username=user_data['username']
+                     , email=movie_data['email']
+                     , username=movie_data['username']
                      , password=set_hsh_password('password')
                      , status=SystemConstant.STATUS_A
                      , token=secrets.token_urlsafe()
@@ -165,7 +165,7 @@ def create_new_user_generate_password(user_data):
         userServiceObj = userServiceDto(userId=userObj['userId'],email=userObj['email'],username=userObj['username'],status=userObj['status'], is_authenticated=True,token=userObj['token'], role=user_role['role'])
         return userServiceObj
     else:
-        return check_duplicate_user(user_data['username'], user_data['email'], user_data['language'])
+        return check_duplicate_user(movie_data['username'], movie_data['email'], movie_data['language'])
 
 def get_all_user():
     users = db['users']

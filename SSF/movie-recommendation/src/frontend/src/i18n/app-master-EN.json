@@ -20,5 +20,6 @@
 	"rePassword": "Re-password",
 	"forgot": "forgot your password ?",
 	"changePassword": "Change Password",
-	"require" : "Please input your username and password."
+	"require" : "Please input your username and password.",
+	"required" : "Fields is required."
 }

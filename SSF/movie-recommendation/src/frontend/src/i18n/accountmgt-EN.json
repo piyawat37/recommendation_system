@@ -13,5 +13,6 @@
 	"role": "Role",
 	"editpanel": "Edit Account",
 	"submit": "Submit",
-	"cancel": "Cancel"
+	"cancel": "Cancel",
+	"required" : "Fields is required."
 }

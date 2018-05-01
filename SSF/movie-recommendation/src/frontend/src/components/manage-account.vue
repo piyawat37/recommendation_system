@@ -76,13 +76,6 @@
 			          <i class="fa fa-trash" aria-hidden="true"></i>
 			        </b-button>
 			      </template>
-			      <!-- <template slot="row-details" slot-scope="row">
-			        <b-card>
-			          <ul>
-			            <li v-for="(value, key) in row.item" :key="key">{{ key }}: {{ value}}</li>
-			          </ul>
-			        </b-card>
-			      </template> -->
 			    </b-table>
 			
 			    <!-- Info modal -->
@@ -147,16 +140,18 @@
 				       		 </b-row>
 					     </div>
 					     <hr style="background-color: rgb(255, 255, 255);"/>
-			            <b-form>
-							<b-form-group>
+			            <b-form class="text-left">
+							<b-form-group v-bind:class="{ 'form-group--error': $v.createAccount.email.$error }">
 								<b-form-input type="email"
-							                 :placeholder="uiLabel.email"
+							                 :placeholder="uiLabel.email" @input="$v.createAccount.email.$touch()"
 							                 v-model.trim="createAccount.email"></b-form-input>
+							    <span class="form-group__message require" v-if="!$v.createAccount.email.required && $v.createAccount.email.$dirty">This field is required.</span>
 							</b-form-group>
-							<b-form-group>
+							<b-form-group v-bind:class="{ 'form-group--error': $v.createAccount.username.$error }">
 								<b-form-input type="text"
-							                 :placeholder="uiLabel.username"
+							                 :placeholder="uiLabel.username" @input="$v.createAccount.username.$touch()"
 							                 v-model.trim="createAccount.username"></b-form-input>
+							    <span class="form-group__message require" v-if="!$v.createAccount.username.required && $v.createAccount.username.$dirty">This field is required.</span>
 							</b-form-group>
 							<b-form-group>
 								<b-form-select v-model=createAccount.role :options="optionsRole" class="mb-3" />
@@ -180,6 +175,7 @@
 /* eslint-disable */
 import configService from '../SystemConstant/config.json'
 import $ from 'jquery'
+import { required, minLength, sameAs, between } from "vuelidate/lib/validators"
 export default {
   data () {
     return {
@@ -245,9 +241,11 @@ export default {
       this.$root.$emit('bv::show::modal', 'userInfo', button)
     },
     resetModal () {
-      this.userInfo.title = ''
-      this.userInfo.content = {'email': '', 'username': '', 'status': ''}
-   	  this.$root.$emit('bv::hide::modal', 'userInfo')
+      var vm = this
+      vm.userInfo.title = ''
+      vm.userInfo.content = {'email': '', 'username': '', 'status': ''}
+   	  vm.$root.$emit('bv::hide::modal', 'userInfo')
+      vm.$v.$reset()
     },
     onFiltered (filteredItems) {
       // Trigger pagination to update the number of buttons/pages due to filtering
@@ -325,25 +323,30 @@ export default {
     handleCreateAccount(){
     	var vm = this;
     	vm.createAccount.language = vm.language
-    	vm.$http.post(configService.userService + '/createAccount', vm.createAccount).then(response => {
-          	var user = response.body.user
-          	var content = "Account "
-          	content += user.username
-          	content += " created."
-          	this.$swal('Success!', content, 'success')
-          	vm.$root.$emit('bv::hide::modal', 'createAccount')
-          	vm.getAllUser(vm)
-          	// Redirect to a specified route
-          }, response => {
-       	  	this.$swal('Error!', response.bodyText, 'error')
-       	  	vm.getAllUser(vm)
-      		console.log(response.statusText)
-          });
+    	if(!vm.$v.createAccount.$invalid){
+	    	vm.$http.post(configService.userService + '/createAccount', vm.createAccount).then(response => {
+	          	var user = response.body.user
+	          	var content = "Account "
+	          	content += user.username
+	          	content += " created."
+	          	this.$swal('Success!', content, 'success')
+	          	vm.getAllUser(vm)
+	          	vm.clearCreateAccount()
+	          	// Redirect to a specified route
+	          }, response => {
+	       	  	this.$swal('Error!', response.bodyText, 'error')
+	       	  	vm.getAllUser(vm)
+	      		console.log(response.statusText)
+	          });
+    	}else{
+        	this.$swal('Error!', this.uiLabel.required, 'error')
+        }
     },
     clearCreateAccount(){
     	var vm = this;
     	vm.createAccount = {'email': '', 'username': '', 'role': 'user'}
  	   	vm.$root.$emit('bv::hide::modal', 'createAccount')
+        vm.$v.$reset()
     }
   },
   beforeCreate() {
@@ -368,6 +371,16 @@ export default {
   created () {
 	var vm = this;
 	vm.uiLabel = require("../i18n/accountmgt-"+vm.language+".json")
+  },
+  validations: {
+    createAccount: {
+   	  email:{
+  		  required
+  	  },
+	  username:{
+		  required
+	  }
+    }
   }
 }
 </script>

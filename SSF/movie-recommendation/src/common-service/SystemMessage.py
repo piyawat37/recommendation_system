@@ -20,5 +20,7 @@ class SystemMessage(object):
         "usernameException-TH" : "ชื่อผู้ใช้นี้",
         "emailException-EN" : "Email",
         "emailException-TH" : "อีเมลล์",
+        "titleException-EN" : "Title",
+        "titleException-TH" : "ชื่อภาพยนตร์",
     }
         

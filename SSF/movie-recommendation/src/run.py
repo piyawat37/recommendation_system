@@ -5,12 +5,10 @@ Created on Dec 11, 2017
 '''
 
 from flask import Flask, render_template, jsonify, request, redirect, session, Response
-import flask
 from flask.helpers import url_for
-from flask_cors.decorator import cross_origin
 from flask_cors.extension import CORS
 from flask_login.login_manager import LoginManager
-from flask_login.utils import login_required, login_user, logout_user 
+from flask_login.utils import login_required, logout_user 
 import requests, os
 
 import movie_service
@@ -54,7 +52,7 @@ def common_service_version():
     pom = common_service.pom_version()
     response = {
         'version': pom.version,
-        'poc_version': pom.poc_version
+        'poc_version': pom.poc_version,
     }
     return jsonify(response)
 
@@ -89,7 +87,7 @@ def signIn():
     if request.method == 'POST':
         data = json.loads(request.data)
         response = {}
-        userObj = user_service.user_validate_login(user_data=data)
+        userObj = user_service.user_validate_login(movie_data=data)
         if userObj.get_is_authenticated() == True:
             if userObj.get_status == SystemConstant.STATUS_I: 
                 try:
@@ -117,12 +115,8 @@ def signUp():
     if request.method == 'POST':
         data = json.loads(request.data)
         response = {}
-        print(data['email'])
-        print(data['username'])
-        print(data['password'])
-        print(data['language'])
         if check_duplicate_user(data['username'], data['email'], data['language']) == False:
-            userObj = user_service.create_new_user(user_data=data)
+            userObj = user_service.create_new_user(movie_data=data)
             response = {
                 'user' : userObj.toJSON()
             }
@@ -136,7 +130,7 @@ def create_new_account():
         data = json.loads(request.data)
         response = {}
         if check_duplicate_user(data['username'], data['email'], data['language']) == False:
-            userObj = user_service.create_new_user_generate_password(user_data=data)
+            userObj = user_service.create_new_user_generate_password(movie_data=data)
             response = {
                 'user' : userObj.toJSON()
             }
@@ -248,9 +242,23 @@ def update_movie():
     if request.method == 'POST':
         data = json.loads(request.data)
         response = {}
-        movieObj = movie_service.update_movie(movieContext=data)
+        if movie_service.check_duplicate_movie(data['title'], data['movieId'], data['language']) == False:
+            movieObj = movie_service.update_movie(movieContext=data)
+            response = {
+                'movie' : movieObj.to_JSON_Update()
+            }
+        else:
+            return movie_service.check_duplicate_movie(data['title'], data['movieId'], data['language'])
+        return jsonify(response)
+    
+@app.route("/movie-service/addRating", methods = ['POST', 'GET'])
+def add_rating():
+    if request.method == 'POST':
+        data = json.loads(request.data)
+        response = {}
+        ratedObj = movie_service.add_rating(ratedContext=data)
         response = {
-            'movie' : movieObj.to_JSON_Update()
+            'userId' : ratedObj['userId']
         }
         return jsonify(response)
 
@@ -261,13 +269,26 @@ def delete_movie(movieId):
     }
     return jsonify(response)
 
+@app.route("/movie-service/createMovie", methods = ['POST', 'GET'])
+def create_new_movie():
+    if request.method == 'POST':
+        data = json.loads(request.data)
+        response = {}
+        if movie_service.check_duplicate_movie(title=data['title'],language=data['language']) == False:
+            movieObj = movie_service.create_new_movie(movie_data=data)
+            response = {
+                'movie' : movieObj.to_JSON_Update()
+            }
+        else:
+            return movie_service.check_duplicate_movie(title=data['title'], language=data['language'])
+        return jsonify(response)
 
 @app.route('/', defaults={'path': ''})
 @app.route('/<path:path>')
 def catch_all(path):
     if app.debug:
-        return requests.get('http://localhost:8080/{}'.format(path)).text
+        return requests.get('http://localhost:8082/{}'.format(path)).text
     return render_template("index.html")
 
 if __name__ == "__main__":
-    app.run()
+    app.run(port=4996)

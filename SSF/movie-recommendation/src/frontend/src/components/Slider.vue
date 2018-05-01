@@ -28,19 +28,19 @@
           )
           .slide(
             v-for="(content ,contentIndex) in contentContainer[container]"
-            ref="slides"
-            v-mouse:mouseover="{position: slideContainerIndex % 3,handler:selectSlide}"
-            v-mouse:mouseout="{position: slideContainerIndex % 3,handler:unselectSlide}"
+            ref="slides" v-on:click="showJSON(content)"
             :id="'slide-'+container+'-'+contentIndex"
             :data-container-index="slideContainerIndex"
             :data-content-index="contentIndex"
-          ) <span v-text="content.title"></span> 
+          ) {{content.title}}<star-rating :star-size="40" :border-width="3" @rating-selected ="setRating($event, content.movieId)" @click="addRatings()" :show-rating="false" :increment="0.5"inactive-color="#FFDDCB" active-color="#ff9900"></star-rating>
 </template>
-
+<!-- v-mouse:mouseover="{position: slideContainerIndex % 3,handler:selectSlide}"
+            v-mouse:mouseout="{position: slideContainerIndex % 3,handler:unselectSlide}" -->
 
 <script>
 /* eslint-disable */
 import _ from 'lodash';
+import configService from '../SystemConstant/config.json'
 import $ from 'jquery';
 
 export default {
@@ -74,7 +74,9 @@ export default {
       contentContainer: [],
       contentData: [],
       contentContainerSize: 6,
-      infinityLoop: false
+      infinityLoop: false,
+      rating: 0,
+      ratedContext:{}
     };
   },
   methods: {
@@ -264,6 +266,30 @@ export default {
     setStyleProperty(element, styles) {
       Object.assign(element.style, styles);
     },
+    setRating: function(rating, movieId){
+      var vm = this
+      vm.rating= rating
+      vm.ratedContext.rating = vm.rating
+      vm.ratedContext.token = localStorage.getItem('token')
+      vm.ratedContext.movieId = movieId 
+  	  vm.$Progress.start()
+      vm.$http.post(configService.movieService + '/addRating', vm.ratedContext).then(response => {
+	  		// get body data
+			vm.user_token = response.body.user
+			vm.$router.go('/')
+			vm.$Progress.finish()
+	    }, response => {
+	      // error callback
+			vm.$Progress.fail()
+			localStorage.removeItem('token');
+	      	vm.$router.go('/')
+	    });
+    },
+    showJSON(movieInfo){
+    	var vm = this
+    	vm.$swal('','movieId: '+ movieInfo.movieId + ' ' + movieInfo.genres, 'success')
+    	console.log('ssss')
+    }
   },
   mounted() {
     this.$el.style.setProperty('--ratio', `${this.ratio}`);

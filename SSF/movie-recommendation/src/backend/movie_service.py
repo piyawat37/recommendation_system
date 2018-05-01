@@ -5,22 +5,29 @@ Created on Dec 11, 2017
 '''
 #Defined Version
 
+from flask import Response
+from numpy import delete
 import pandas
+import time
 
 from QLearning import QLearningTable
 from SystemConstant import SystemConstant
+from SystemException import SystemException
+from SystemMessage import SystemMessage
 from connectMongoDB import _connect_mongo
+from movieServiceRepository import movieServiceRepository
 import numpy as np
 import pandas as pd
 from pomServiceDto import pomServiceDto
+from ratingServiceRepository import ratingServiceRepository
 from recMovieDto import recMovieDto
-from numpy import delete
+from user_service import data_test
 
 
 def pom_version():
     pom = pomServiceDto('movie-service',
-                  '1.0.0',
-                  '0.0.10-PROTOTYPE',
+                  '1.0.1',
+                  '0.0.11-PROTOTYPE',
                   'Created on Dec 11, 2018',
                   'Piyawat Pemwattana')
     return pom
@@ -44,8 +51,8 @@ def recommend_movies(predictions_df, userID, movies_df, original_ratings_df, use
     user_row_number = userID - 1 # UserID starts at 1, not 0
     sorted_user_predictions = predictions_df.iloc[user_row_number].sort_values(ascending=False)
     # Get the user's data and merge in the movie information.
-    user_data = original_ratings_df[original_ratings_df.userId == userID]
-    user_full = (user_data.merge(movies_df, how = 'left', left_on = 'movieId', right_on = 'movieId').
+    movie_data = original_ratings_df[original_ratings_df.userId == userID]
+    user_full = (movie_data.merge(movies_df, how = 'left', left_on = 'movieId', right_on = 'movieId').
                      sort_values(['rating'], ascending=False)
                  )
 
@@ -187,8 +194,68 @@ def update_movie(movieContext):
                               , rating=None)
     return movieObjDto
 
+def add_rating(ratedContext):
+    user = db['users'].find_one({'token' : ratedContext['token']})
+    user_has_rated = db['ratings'].find_one({'userId' : user['userId'], 'movieId' : ratedContext['movieId']})
+    if user_has_rated != None:
+        db['ratings'].find_one_and_update({'userId':user['userId'], 'movieId' : ratedContext['movieId']}, {'$set': {'rating': str(ratedContext['rating'])}})
+    else:
+        ratingObj = ratingServiceRepository(userId=user['userId']
+                                            , movieId=ratedContext['movieId']
+                                            , rating=str(ratedContext['rating'])
+                                            , timestamp="%d " %  time.time())
+        db.ratings.insert_one(ratingObj.to_JSON())
+    
+    return user
+
 def delete_movie(movieId):
     db.movies.delete_one({'movieId':movieId})
 
-# movies_top = transform_dataFrame()
+def check_duplicate_movie(title=None, movieId=None, language=None):
+    isDuplicate = False
+    movieObj = db['movies'].find_one({'title' : title})
+    if movieId != None:
+        if movieObj != None and movieObj['movieId'] != movieId:
+            try:
+                raise SystemException(SystemException.message_duplicate_context(None, SystemMessage.Msg['titleException-'+language], language))
+            except SystemException as error:
+                resp = Response({SystemException.message_duplicate_context(None, SystemMessage.Msg['titleException-'+language], language)}, status=400, mimetype='application/json')
+                return resp
+    else:
+        if movieObj != None:
+            try:
+                raise SystemException(SystemException.message_duplicate_context(None, SystemMessage.Msg['titleException-'+language], language))
+            except SystemException as error:
+                resp = Response({SystemException.message_duplicate_context(None, SystemMessage.Msg['titleException-'+language], language)}, status=400, mimetype='application/json')
+                return resp
+            
+    return isDuplicate
+        
+
+def create_new_movie(movie_data):
+    print(movie_data['title'])
+    print(movie_data['language'])
+    if check_duplicate_movie(title=movie_data['title'],language=movie_data['language']) == False:
+        movieGetMax = db.movies.find().sort('movieId', -1).limit(1)
+        movieId = ''
+        for cursor in movieGetMax:
+            movieId = int(cursor['movieId'])+1
+        movieObjRepo = movieServiceRepository(movieId=movieId, title=movie_data['title'], genres=movie_data['genres'])
+        db.movies.insert_one(movieObjRepo.to_JSON())
+        movieObj = db['movies'].find_one({'movieId' : movieId})
+        print(movieObj)
+        movieServiceObj = recMovieDto(movieId=movieObj['movieId'], title=movieObj['title'], genres=movieObj['genres'], rating=None)
+        return movieServiceObj
+    else:
+        return check_duplicate_movie(title=movie_data['title'],language=movie_data['language'])
+
+def data_test():
+    return{
+        'title':'sssssssss',
+        'language' :'EN',
+        'genres':'test|test'
+    }
+
+# print(create_new_movie(data_test()))
+# movies_top = transform_dataFrame(6)
 # print(movies_top)

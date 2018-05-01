@@ -4,10 +4,13 @@
         <vue-progress-bar></vue-progress-bar>
 		<b-navbar toggleable="md" type="dark" variant="dark" sticky>
 		  <b-navbar-toggle target="nav_collapse"></b-navbar-toggle>
-		  <b-navbar-brand href="#">LOGO</b-navbar-brand>
+		  <b-navbar-brand href="#"><span v-text="uiLabel.logo"></span></b-navbar-brand>
 		  <b-collapse is-nav id="nav_collapse">
 		    <b-navbar-nav>
-		      <b-nav-item href="#"><span v-text="uiLabel.home"></span></b-nav-item>
+		      <b-nav-item>
+		      	<router-link to="/" tag="div">
+				    <i class="fa fa-home" aria-hidden="true"></i> <span v-text="uiLabel.home"></span>
+				</router-link></b-nav-item>
 		      <b-nav-item href="#"><span v-text="uiLabel.movies"></span></b-nav-item>
 		      <b-nav-item href="#"><span v-text="uiLabel.publicFavorite"></span></b-nav-item>
 		    </b-navbar-nav>
@@ -100,30 +103,32 @@
 		       		 </b-row>
 			     </div>
 			     <hr style="background-color: rgb(255, 255, 255);"/>
-	            <b-form>
-					<b-form-group>
+	            <b-form class="text-left">
+					<b-form-group v-bind:class="{ 'form-group--error': $v.signUp.email.$error }">
 						<b-form-input type="email"
-					                 :placeholder="uiLabel.email"
+					                 :placeholder="uiLabel.email" @input="$v.signUp.email.$touch()"
 					                 v-model.trim="signUp.email"></b-form-input>
+		                <span class="form-group__message require" v-if="!$v.signUp.email.required && $v.signUp.email.$dirty">This field is required.</span>
 					</b-form-group>
-					<b-form-group>
+					<b-form-group v-bind:class="{ 'form-group--error': $v.signUp.username.$error }">
 						<b-form-input type="text"
-					                 :placeholder="uiLabel.username"
+					                 :placeholder="uiLabel.username" @input="$v.signUp.username.$touch()"
 					                 v-model.trim="signUp.username"></b-form-input>
+					                 <span class="form-group__message require" v-if="!$v.signUp.username.required && $v.signUp.username.$dirty">This field is required.</span>
 					</b-form-group>
 					<b-form-group v-bind:class="{ 'form-group--error': $v.signUp.password.$error }">
 					    <b-form-input type="password"
 				                    :placeholder="uiLabel.password" @input="$v.signUp.password.$touch()"
 				                    v-model.trim="signUp.password"></b-form-input>
-				                    <span class="form-group__message" v-if="!$v.signUp.password.required && $v.signUp.password.$dirty">Password is required.</span>
-				                   <span class="form-group__message" v-if="!$v.signUp.password.minLength">Password must have at least {{ $v.signUp.password.$params.minLength.min }} letters.</span>
+				                   <span class="form-group__message require" v-if="!$v.signUp.password.required && $v.signUp.password.$dirty">This field is required.</span>
+				                   <span class="form-group__message require" v-if="!$v.signUp.password.minLength">Password must have at least {{ $v.signUp.password.$params.minLength.min }} letters.</span>
 					</b-form-group>
 					<b-form-group v-bind:class="{ 'form-group--error': $v.signUp.password.$error }">
 					    <b-form-input type="password"
 				                    :placeholder="uiLabel.rePassword" @input="$v.signUp.rePassword.$touch()"
 				                    v-model.trim="signUp.rePassword"></b-form-input>
-				                    <span class="form-group__message" v-if="!$v.signUp.rePassword.required && $v.signUp.password.$dirty">Re-password is required.</span>
-				                    <span class="form-group__message" v-if="!$v.signUp.rePassword.sameAsPassword">Passwords must be identical.</span>
+				                    <span class="form-group__message require" v-if="!$v.signUp.rePassword.required && $v.signUp.password.$dirty">This field is required.</span>
+				                    <span class="form-group__message require" v-if="!$v.signUp.rePassword.sameAsPassword">Passwords must be identical.</span>
 					</b-form-group>
 	           		<div slot="modal-footer" class="w-100">
 			       		 <b-row>
@@ -147,8 +152,7 @@
 import configService from './SystemConstant/config.json'
 import { vueTopprogress } from 'vue-top-progress'
 import $ from 'jquery'
-import { validationMixin } from "vuelidate"
-import { required, minLength, sameAs } from "vuelidate/lib/validators"
+import { required, minLength, sameAs, between } from "vuelidate/lib/validators"
 import footerMaster from './components/Footer'
 export default {
   name: 'app',
@@ -162,6 +166,8 @@ export default {
 		signInRpsClass: 'text-left',
 		windowWidth: 0,
      	windowHeight: 0,
+     	name: '',
+        age: 0,
 		user: {
 			username: '',
 			password: '',
@@ -226,11 +232,13 @@ export default {
    	  this.$refs.signIn.hide()
     },
     clearSignUp () {
-        this.signUp.email = ''
-        this.signUp.username = ''
-        this.signUp.password = ''
-        this.signUp.rePassword = ''
-   		this.$refs.signUp.hide()
+    	var vm = this
+        vm.signUp.email = ''
+        vm.signUp.username = ''
+        vm.signUp.password = ''
+        vm.signUp.rePassword = ''
+        vm.$v.$reset()
+   		vm.$refs.signUp.hide()
     },
     handleOk (evt) {
       // Prevent modal from closing
@@ -243,9 +251,14 @@ export default {
       }
     },
    	handleSignUp(){
-    	this.getAuthHeader()
-        this.signUp.language = this.language
-    	this.signup(this, this.signUp, '/')
+    	var vm = this
+    	vm.getAuthHeader()
+        vm.signUp.language = vm.language
+        if(!vm.$v.signUp.$invalid){
+	    	vm.signup(this, vm.signUp, '/')
+        }else{
+        	this.$swal('Error!', this.uiLabel.required, 'error')
+        }
     },
     handleSignIn () {
     	this.getAuthHeader()
@@ -322,7 +335,7 @@ export default {
     }
   },
   created () {
-	  	this.language.toUpperCase()
+	  	this.language = this.language.toUpperCase()
 		var vm = this;
 		vm.setSignInButtonSize()
 		vm.uiLabel = require("./i18n/app-master-"+vm.language+".json")
@@ -375,11 +388,14 @@ export default {
     window.removeEventListener('resize', this.getWindowWidth);
     window.removeEventListener('resize', this.getWindowHeight);
   },
-  mixins: [
-      validationMixin
-  ],
   validations: {
     signUp: {
+   	  email:{
+  		  required
+  	  },
+	  username:{
+		  required
+	  },
       password:{
     	  required,
     	  minLength: minLength(8)
@@ -412,5 +428,7 @@ body, html{
 a{
 	color: #ff9900;
 }
-
+.require{
+	color: #FFA53E;
+}
 </style>

@@ -16,6 +16,7 @@ import 'bootstrap/dist/css/bootstrap.css';
 import 'bootstrap-vue/dist/bootstrap-vue.css';
 import ToggleButton from 'vue-js-toggle-button'
 import Icon from 'vue-awesome/components/Icon'
+import StarRating from 'vue-star-rating'
 
 var corsHeaders = {
 	  origin: ["*"],
@@ -44,6 +45,7 @@ Vue.use(Vuelidate)
 Vue.use(Datatable)
 Vue.use(ToggleButton)
 Vue.component('icon', Icon)
+Vue.component('star-rating', StarRating);
 Vue.use(VueProgressBar, {
   color: 'rgb(255, 255, 255)',
   failedColor: 'red',

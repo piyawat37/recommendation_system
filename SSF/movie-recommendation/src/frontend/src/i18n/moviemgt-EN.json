@@ -6,10 +6,12 @@
 	"clear" : "Clear",
 	"orderASC": "Asc",
 	"orderDESC": "Desc",
+	"createMovie": "Create Movie",
 	"movieId": "Movie ID",
 	"title": "Title",
 	"genres": "Genres",
 	"editpanel": "Edit Account",
 	"submit": "Submit",
-	"cancel": "Cancel"
+	"cancel": "Cancel",
+	"required" : "Field is required."
 }

@@ -2,7 +2,14 @@
 	<div class="container-main">
 		<div class="container-manage">
 			<b-container fluid class="text-left">
-				<h1 v-text="uiLabel.screenTitle"></h1>
+				<b-row>
+					<b-col cols="8">
+						<h1 v-text="uiLabel.screenTitle"></h1>
+					</b-col>
+					<b-col cols="4" class="text-right">
+						<b-button v-b-modal.createMovie variant="primary"><i class="fa fa-plus-square" aria-hidden="true"></i> <span v-text="uiLabel.createMovie"></span></b-button>
+					</b-col>
+				</b-row>
 			</b-container>
 			<hr class="style-manage"/>
 			 <b-container fluid v-if="!progress">
@@ -62,13 +69,6 @@
 			          <i class="fa fa-trash" aria-hidden="true"></i>
 			        </b-button>
 			      </template>
-			      <!-- <template slot="row-details" slot-scope="row">
-			        <b-card>
-			          <ul>
-			            <li v-for="(value, key) in row.item" :key="key">{{ key }}: {{ value}}</li>
-			          </ul>
-			        </b-card>
-			      </template> -->
 			    </b-table>
 			
 			    <!-- Info modal -->
@@ -92,14 +92,72 @@
 									<b-form-input type="text" disabled
 								                 v-model="movieInfo.content.movieId"></b-form-input>
 								</b-form-group>
-								<b-form-group>
-									<b-form-input type="text"
+								<b-form-group v-bind:class="{ 'form-group--error': $v.movieInfo.title.$error }">
+									<b-form-input type="text" @input="$v.movieInfo.title.$touch()"
 								                 v-model="movieInfo.content.title"></b-form-input>
+								    <span class="form-group__message require" v-if="!$v.movieInfo.title.required && $v.movieInfo.title.$dirty">This field is required.</span>
 								</b-form-group>
-								<b-form-group>
-									<b-form-input type="text"
-								                 v-model="movieInfo.content.genres"></b-form-input>
+								
 								</b-form-group>
+								<b-form-group class="text-left">
+								  <b><label v-text="uiLabel.genres"></label></b>
+							      <b-form-checkbox-group id="genresCheckbox" name="flavour2" v-model="movieInfo.content.genresList">
+							        <b-row>
+							        	<b-col cols="3">
+									        <b-form-checkbox value="Adventure">Adventure</b-form-checkbox>
+							        	</b-col>
+							        	<b-col cols="3">
+									        <b-form-checkbox value="Animation">Animation</b-form-checkbox>
+							        	</b-col>
+							        	<b-col cols="3">
+							        		<b-form-checkbox value="Comedy">Comedy</b-form-checkbox>
+							        	</b-col>
+							        	<b-col cols="3">
+							        		<b-form-checkbox value="Fantasy">Fantasy</b-form-checkbox>
+							        	</b-col>
+							        </b-row>
+							        <b-row>
+							        	<b-col cols="3">
+									        <b-form-checkbox value="Romance">Romance</b-form-checkbox>
+							        	</b-col>
+							        	<b-col cols="3">
+									        <b-form-checkbox value="Drama">Drama</b-form-checkbox>
+							        	</b-col>
+							        	<b-col cols="3">
+							        		<b-form-checkbox value="Crime">Crime</b-form-checkbox>
+							        	</b-col>
+							        	<b-col cols="3">
+							        		<b-form-checkbox value="Thriller">Thriller</b-form-checkbox>
+							        	</b-col>
+							        </b-row>
+							        <b-row>
+							        	<b-col cols="3">
+									        <b-form-checkbox value="Horror">Horror</b-form-checkbox>
+							        	</b-col>
+							        	<b-col cols="3">
+									        <b-form-checkbox value="Sci-Fi">Sci-Fi</b-form-checkbox>
+							        	</b-col>
+							        	<b-col cols="3">
+							        		<b-form-checkbox value="Mystery">Mystery</b-form-checkbox>
+							        	</b-col>
+							        	<b-col cols="3">
+							        		<b-form-checkbox value="War">War</b-form-checkbox>
+							        	</b-col>
+							        </b-row>
+							        <b-row>
+							        	<b-col cols="3">
+									        <b-form-checkbox value="Action">Action</b-form-checkbox>
+							        	</b-col>
+							        	<b-col cols="3">
+									        <b-form-checkbox value="Musical">Musical</b-form-checkbox>
+							        	</b-col>
+							        	<b-col cols="3">
+							        	</b-col>
+							        	<b-col cols="3">
+							        	</b-col>
+							        </b-row>
+							      </b-form-checkbox-group>
+							    </b-form-group>
 				           		<div slot="modal-footer" class="w-100">
 						       		 <b-row>
 						       		 	<b-col lg="6" md="12" cols="12">
@@ -116,6 +174,99 @@
 							</b-form>
 			       		</b-container>
 				    </b-modal>
+				     <b-modal  id="createMovie" v-bind:title="uiLabel.createMovie"
+						ref="createMovie"
+						header-bg-variant="dark" header-text-variant="light"
+						body-bg-variant="dark" body-text-variant="light"
+						footer-bg-variant="dark" footer-text-variant="light"
+						:ok-title="uiLabel.createMovie" hide-footer hide-header
+			            no-close-on-backdrop no-close-on-esc>
+			           	<b-container fluid>
+			           		<div slot="modal-header" class="w-100">
+					       		 <b-row>
+					       		 	<b-col cols="12" class="text-left">
+					       		 		<h4 v-text="uiLabel.createMovie"></h4>
+					       		 	</b-col>
+					       		 </b-row>
+						     </div>
+						     <hr style="background-color: rgb(255, 255, 255);"/>
+				            <b-form class="text-left">
+								<b-form-group v-bind:class="{ 'form-group--error': $v.createMovie.title.$error }">
+									<b-form-input type="text"
+								                 :placeholder="uiLabel.title" @input="$v.createMovie.title.$touch()"
+								                 v-model.trim="createMovie.title"></b-form-input>
+								    <span class="form-group__message require" v-if="!$v.createMovie.title.required && $v.createMovie.title.$dirty">This field is required.</span>
+								</b-form-group>
+								<b-form-group class="text-left">
+								  <b><label v-text="uiLabel.genres"></label></b>
+							      <b-form-checkbox-group id="genresCheckbox" name="flavour2" v-model="createMovie.genresList">
+							        <b-row>
+							        	<b-col cols="3">
+									        <b-form-checkbox value="Adventure">Adventure</b-form-checkbox>
+							        	</b-col>
+							        	<b-col cols="3">
+									        <b-form-checkbox value="Animation">Animation</b-form-checkbox>
+							        	</b-col>
+							        	<b-col cols="3">
+							        		<b-form-checkbox value="Comedy">Comedy</b-form-checkbox>
+							        	</b-col>
+							        	<b-col cols="3">
+							        		<b-form-checkbox value="Fantasy">Fantasy</b-form-checkbox>
+							        	</b-col>
+							        </b-row>
+							        <b-row>
+							        	<b-col cols="3">
+									        <b-form-checkbox value="Romance">Romance</b-form-checkbox>
+							        	</b-col>
+							        	<b-col cols="3">
+									        <b-form-checkbox value="Drama">Drama</b-form-checkbox>
+							        	</b-col>
+							        	<b-col cols="3">
+							        		<b-form-checkbox value="Crime">Crime</b-form-checkbox>
+							        	</b-col>
+							        	<b-col cols="3">
+							        		<b-form-checkbox value="Thriller">Thriller</b-form-checkbox>
+							        	</b-col>
+							        </b-row>
+							        <b-row>
+							        	<b-col cols="3">
+									        <b-form-checkbox value="Horror">Horror</b-form-checkbox>
+							        	</b-col>
+							        	<b-col cols="3">
+									        <b-form-checkbox value="Sci-Fi">Sci-Fi</b-form-checkbox>
+							        	</b-col>
+							        	<b-col cols="3">
+							        		<b-form-checkbox value="Mystery">Mystery</b-form-checkbox>
+							        	</b-col>
+							        	<b-col cols="3">
+							        		<b-form-checkbox value="War">War</b-form-checkbox>
+							        	</b-col>
+							        </b-row>
+							        <b-row>
+							        	<b-col cols="3">
+									        <b-form-checkbox value="Action">Action</b-form-checkbox>
+							        	</b-col>
+							        	<b-col cols="3">
+									        <b-form-checkbox value="Musical">Musical</b-form-checkbox>
+							        	</b-col>
+							        	<b-col cols="3">
+							        	</b-col>
+							        	<b-col cols="3">
+							        	</b-col>
+							        </b-row>
+							      </b-form-checkbox-group>
+							    </b-form-group>
+				           		<div slot="modal-footer" class="w-100">
+						       		 <b-row>
+						       		 	<b-col cols="12" class="text-right">
+						       		 		<b-btn class="float-right" variant="secondary" @click="handleCreateMovie" v-text="uiLabel.submit" style="margin-left: 5px;"></b-btn>
+						       		 		<b-btn class="float-right" variant="danger" @click="clearCreateMovie" v-text="uiLabel.cancel"></b-btn>
+						       		 	</b-col>
+						       		 </b-row>
+							     </div>
+							</b-form>
+			       		</b-container>
+					</b-modal>
 			  </b-container>
 		</div>
 	</div>
@@ -124,6 +275,7 @@
 /* eslint-disable */
 import configService from '../SystemConstant/config.json'
 import $ from 'jquery'
+import { required, minLength, sameAs, between } from "vuelidate/lib/validators"
 export default {
   data () {
     return {
@@ -136,7 +288,13 @@ export default {
       sortDesc: false,
       filter: null,
       movieInfo: { title: '', content: '' },
-      progress: true
+      progress: true,
+      createMovie:{
+  		title: '',
+  		genresList: [],
+  		genres: '',
+  		language: this.language
+  	  },
     }
   },
   computed: {
@@ -169,15 +327,19 @@ export default {
      	]
 	},
 	info (item, index, button) {
-      this.movieInfo.title = `Row index: ${index}`
+	  var vm = this
+      vm.movieInfo.title = `Row index: ${index}`
    	  var content = JSON.stringify(item, null, 2)
-      this.movieInfo.content = JSON.parse(content)
-      this.$root.$emit('bv::show::modal', 'movieInfo', button)
+      vm.movieInfo.content = JSON.parse(content)
+      vm.movieInfo.content.genresList = vm.movieInfo.content.genres.split("|") 
+      vm.$root.$emit('bv::show::modal', 'movieInfo', button)
     },
     resetModal () {
-      this.movieInfo.title = ''
-      this.movieInfo.content = {'title': '', 'genres': ''}
-   	  this.$root.$emit('bv::hide::modal', 'movieInfo')
+      var vm = this
+      vm.movieInfo.title = ''
+      vm.movieInfo.content = {'title': '', 'genres': '', 'genresList':[]}
+   	  vm.$root.$emit('bv::hide::modal', 'movieInfo')
+   	  vm.$v.$reset()
     },
     onFiltered (filteredItems) {
       // Trigger pagination to update the number of buttons/pages due to filtering
@@ -229,20 +391,78 @@ export default {
     },
     handleEditOk (movieContext){
     	var vm = this;
-   		vm.$http.post(configService.movieService + '/update', movieContext).then(response => {
-         	var movie = response.body.movie
-         	var content = "Movie ID "+movie.movieId 
-         	content += " ["+movie.title+"]" 
-         	content += " updated"
-         	vm.$swal('Success!', content, 'success')
-        	vm.getAllMovie(vm)
-         	// Redirect to a specified route
-         }, response => {
-        	vm.$swal('Error!', response.bodyText, 'error')
-        	vm.getAllMovie(vm)
-     		console.log(response.statusText)
-         });
+    	movieContext.language = vm.language
+    	var strGenres = ''
+   		var symbol = '|'
+   		var genresLength = movieContext.genresList.length
+   		
+   		if(movieContext.title && genresLength > 0){
+   			$.each(movieContext.genresList, function(key, value){
+	    		strGenres += value
+	    		if(key < genresLength-1){
+	    			strGenres += symbol
+	    		}
+	    	})
+	    	movieContext.genres = strGenres
+   			vm.$http.post(configService.movieService + '/update', movieContext).then(response => {
+   	         	var movie = response.body.movie
+   	         	var content = "Movie ID "+movie.movieId 
+   	         	content += " ["+movie.title+"]" 
+   	         	content += " updated"
+   	         	vm.$swal('Success!', content, 'success')
+   	         	vm.resetModal()
+   	        	vm.getAllMovie(vm)
+   	         	// Redirect to a specified route
+   	         }, response => {
+   	        	vm.$swal('Error!', response.bodyText, 'error')
+   	         	vm.resetModal()
+   	        	vm.getAllMovie(vm)
+   	     		console.log(response.statusText)
+   	         });
+   		}else{
+   			this.$swal('Error!', this.uiLabel.required, 'error')
+   		}
+   		
     },
+    handleCreateMovie (){
+    	var vm = this
+    	vm.createMovie.language = vm.language
+   		var strGenres = ''
+   		var symbol = '|'
+   		var genresLength = vm.createMovie.genresList.length
+    	if(!vm.$v.createMovie.$invalid && genresLength > 0){
+	    	$.each(vm.createMovie.genresList, function(key, value){
+	    		strGenres += value
+	    		if(key < genresLength-1){
+	    			strGenres += symbol
+	    		}
+	    	})
+	    	vm.createMovie.genres = strGenres
+    		vm.$http.post(configService.movieService + '/createMovie', vm.createMovie).then(response => {
+             	var movie = response.body.movie
+             	var content = "Movie "
+             	content += movie.title
+             	content += ' ['+movie.genres+']'
+             	content += " created."
+             	this.$swal('Success!', content, 'success')
+             	vm.getAllMovie(vm)
+              	vm.clearCreateMovie()
+             	// Redirect to a specified route
+             }, response => {
+          	  	this.$swal('Error!', response.bodyText, 'error')
+          	  	vm.getAllMovie(vm)
+         		console.log(response.statusText)
+             });
+    	}else{
+    		this.$swal('Error!', this.uiLabel.required, 'error')
+    	}
+    },
+    clearCreateMovie(){
+    	var vm = this;
+    	vm.createMovie = {'title': '', 'genres': '', 'genresList' : []}
+ 	   	vm.$root.$emit('bv::hide::modal', 'createMovie')
+ 	   	vm.$v.$reset()
+    }
   },
   beforeCreate() {
 	var vm = this;
@@ -266,6 +486,18 @@ export default {
   created () {
 	var vm = this;
 	vm.uiLabel = require("../i18n/moviemgt-"+vm.language+".json")
+  },
+  validations: {
+    createMovie: {
+   	  title:{
+  		  required
+  	  }
+    },
+    movieInfo: {
+   	  title:{
+  		  required
+  	  }
+    }
   }
 }
 </script>

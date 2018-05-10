@@ -9,11 +9,24 @@ import json
 class recMovieDto(object):
 
 
-    def __init__(self=None, movieId=None, title=None, genres=None, rating=None):
+    def __init__(self=None, movieId=None, title=None, genres=None, rating=None, fileImage=None):
         self.movieId = movieId
         self.title = title
         self.genres = genres
         self.rating = rating
+        self.fileImage = fileImage
+
+    def get_img_path(self):
+        return self.__fileImage
+
+
+    def set_img_path(self, value):
+        self.__fileImage = value
+
+
+    def del_img_path(self):
+        del self.__fileImage
+
 
     def get_movie_id(self):
         return self.__movieId
@@ -59,6 +72,7 @@ class recMovieDto(object):
 
     def del_rating(self):
         del self.__rating
+    
 
     def toJSON(self):
         return {
@@ -66,6 +80,7 @@ class recMovieDto(object):
             'title': self.title,
             'genres': self.genres,
             'rating' : self.rating,
+            'fileImage': self.fileImage,
         }
     
     def to_JSON_DataTable(self):
@@ -73,6 +88,7 @@ class recMovieDto(object):
             'movieId': self.movieId,
             'title': self.title,
             'genres': self.genres,
+            'fileImage': self.fileImage,
         } 
     
     def to_JSON_Update(self):
@@ -80,9 +96,11 @@ class recMovieDto(object):
             'movieId': self.movieId,
             'title': self.title,
             'genres': self.genres,
+            'fileImage': self.fileImage,
         } 
         
     movieId = property(get_movie_id, set_movie_id, del_movie_id, "movieId's docstring")
     title = property(get_title, set_title, del_title, "title's docstring")
     genres = property(get_genres, set_genres, del_genres, "genres's docstring")
     rating = property(get_rating, set_rating, del_rating, "rating's docstring")
+    fileImage = property(get_img_path, set_img_path, del_img_path, "fileImage's docstring")

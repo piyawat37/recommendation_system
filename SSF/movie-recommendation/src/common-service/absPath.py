@@ -12,3 +12,11 @@ def project_source_path():
 def csv_file_path():
     directory = project_source_path() + "\\python-generated\\csv-file\\"
     return directory
+
+def chrome_driver_path():
+    directory = project_source_path() + "\\common-service\\chromedriver\\chromedriver.exe"
+    return directory
+
+def movies_image_path():
+    directory = project_source_path() + "\\frontend\\src\\assets\\storage\\movies\\images\\"
+    return directory

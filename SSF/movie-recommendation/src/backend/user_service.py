@@ -24,8 +24,8 @@ db = _connect_mongo(host='localhost', port=27017, username=None, password=None, 
 
 def pom_version():
     pom = pomServiceDto('user-service',
-                  '1.0.1',
-                  '0.0.11-PROTOTYPE',
+                  '1.0.2',
+                  '0.0.12-PROTOTYPE',
                   'Created on Feb 10, 2018',
                   'Piyawat Pemwattana')
     return pom

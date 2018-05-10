@@ -19,6 +19,7 @@ from userServiceDto import userServiceDto
 from SystemException import SystemException
 from SystemConstant import SystemConstant
 from user_service import get_user_by_token, check_duplicate_user
+from absPath import movies_image_path
 
 
 
@@ -33,6 +34,8 @@ app.secret_key = os.urandom(24)
 
 exception = {}
 
+UPLOAD_FOLDER = movies_image_path()
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 @app.route('/common-service/')
 def common_service_pom():
@@ -237,6 +240,16 @@ def get_all_movie():
     print(response)
     return jsonify(response)
 
+@app.route('/movie-service/searchByString/', methods=['GET'])
+def search_by_string():
+    searchString = request.args.get("searchString")
+    movieList = movie_service.search_by_string(searchString)
+    response = {
+        'movies' : movieList
+    }
+    print(response)
+    return jsonify(response)
+
 @app.route("/movie-service/update", methods = ['POST', 'GET'])
 def update_movie():
     if request.method == 'POST':
@@ -282,6 +295,18 @@ def create_new_movie():
         else:
             return movie_service.check_duplicate_movie(title=data['title'], language=data['language'])
         return jsonify(response)
+
+@app.route('/movie-service/upload', methods=['POST'])
+def update_image():
+    config = app.config
+    file = request.files['fileImage']
+    f = config.get('UPLOAD_FOLDER') + file.filename
+    print(f)
+    file.save(f)
+    response = {
+        "status" : 'File Upload Done!.'
+    }
+    return jsonify(response)
 
 @app.route('/', defaults={'path': ''})
 @app.route('/<path:path>')

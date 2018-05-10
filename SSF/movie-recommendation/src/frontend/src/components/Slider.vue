@@ -32,7 +32,15 @@
             :id="'slide-'+container+'-'+contentIndex"
             :data-container-index="slideContainerIndex"
             :data-content-index="contentIndex"
-          ) {{content.title}}<star-rating :star-size="40" :border-width="3" @rating-selected ="setRating($event, content.movieId)" @click="addRatings()" :show-rating="false" :increment="0.5"inactive-color="#FFDDCB" active-color="#ff9900"></star-rating>
+          ) {{content.title}}
+    b-modal(id="movieInfo" ref="movieInfo" header-bg-variant="dark" 
+      header-text-variant="light" body-bg-variant="dark" 
+      body-text-variant="light" footer-bg-variant="dark" 
+      footer-text-variant="light" :title="movieInfo.title"
+      no-close-on-backdrop no-close-on-esc
+      ok-only ok-title="Close")
+      <p><span>{{movieInfo.genres}}</span></p>
+      <star-rating v-if="tokenStorage" :star-size="40" :border-width="3" @rating-selected ="setRating($event, movieInfo.movieId)" @click="addRatings()" :show-rating="false" :increment="0.5"inactive-color="#FFDDCB" active-color="#ff9900"></star-rating>
 </template>
 <!-- v-mouse:mouseover="{position: slideContainerIndex % 3,handler:selectSlide}"
             v-mouse:mouseout="{position: slideContainerIndex % 3,handler:unselectSlide}" -->
@@ -76,7 +84,9 @@ export default {
       contentContainerSize: 6,
       infinityLoop: false,
       rating: 0,
-      ratedContext:{}
+      ratedContext:{},
+      movieInfo: {},
+      tokenStorage: localStorage.getItem('token') ? localStorage.getItem('token') : undefined
     };
   },
   methods: {
@@ -247,10 +257,10 @@ export default {
             const hue = (containerIndex * 20) % 360;
             var imagePath
            	try {
-            	imagePath = require('../assets/storage/movies/images/1920x1080/'+content.movieId+'.jpg')
+            	imagePath = require('../assets/storage/movies/images/'+content.fileImage)
            	}
            	catch(err) {
-	            imagePath = require('../assets/storage/movies/images/1920x1080/image_not_found.jpg')
+	            imagePath = require('../assets/storage/movies/images/image_not_found.jpg')
            	}
             vm.setStyleProperty(slide, {'background-image': 'url('+imagePath+')'})
             vm.setStyleProperty(slide, {'background-size' : 'cover'})
@@ -281,14 +291,13 @@ export default {
 	    }, response => {
 	      // error callback
 			vm.$Progress.fail()
-			localStorage.removeItem('token');
 	      	vm.$router.go('/')
 	    });
     },
     showJSON(movieInfo){
     	var vm = this
-    	vm.$swal('','movieId: '+ movieInfo.movieId + ' ' + movieInfo.genres, 'success')
-    	console.log('ssss')
+   		vm.$refs.movieInfo.show()
+   		vm.movieInfo = movieInfo;
     }
   },
   mounted() {

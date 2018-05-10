@@ -26,8 +26,8 @@ from user_service import data_test
 
 def pom_version():
     pom = pomServiceDto('movie-service',
-                  '1.0.1',
-                  '0.0.11-PROTOTYPE',
+                  '1.0.2',
+                  '0.0.12-PROTOTYPE',
                   'Created on Dec 11, 2018',
                   'Piyawat Pemwattana')
     return pom
@@ -75,7 +75,7 @@ def recommend_movies(predictions_df, userID, movies_df, original_ratings_df, use
                        rename(columns = {user_row_number: 'Predictions'})
                        .sort_values('Predictions', ascending = False))
 #     percents = percent(recommendations['Predictions'])
-
+    print(predict_recommend)
 #     print(recommendations)
 #     return user_full, recommendations
     #Merge Rating
@@ -87,8 +87,8 @@ def recommend_movies(predictions_df, userID, movies_df, original_ratings_df, use
 
 def get_movies_top_rate(movies, users, ratings):
     merge_ratings_user = pd.merge(ratings,users, on = 'userId')
-    movie_data = pd.merge(movies,merge_ratings_user, on = 'movieId').filter(items=['movieId', 'title', 'genres', 'rating'])
-    movie_top_rate = movie_data.groupby(['movieId','title', 'genres'], as_index=False).mean().sort_values('rating', ascending = False)
+    movie_data = pd.merge(movies,merge_ratings_user, on = 'movieId').filter(items=['movieId', 'title', 'genres', 'rating', 'fileImage'])
+    movie_top_rate = movie_data.groupby(['movieId','title', 'genres', 'fileImage'], as_index=False).mean().sort_values('rating', ascending = False)
     return movie_top_rate
 
 def get_movies_classify_by_prediction(genres, predic, range):
@@ -105,7 +105,6 @@ def transform_dataFrame(id=None):
     ratings_df['rating'] = ratings_df['rating'].apply(pd.to_numeric)
     movie_list = []
     movieServiceObj = {}
-    ranking = 0
     if id != None:
         R_df = ratings_df.pivot(index = 'userId', columns ='movieId', values = 'rating').fillna(0)
         R = R_df.as_matrix()
@@ -128,7 +127,7 @@ def transform_dataFrame(id=None):
         if len(movies_top) > 0 :
             movie_list = []
             for index, row in movies_top.iterrows():
-                movieObj = recMovieDto(row['movieId'], row['title'], row['genres'], row['rating'])
+                movieObj = recMovieDto(movieId=row['movieId'], title=row['title'], genres=row['genres'], fileImage=row['fileImage'])
                 movie_list.append(movieObj.toJSON())
             
             movieServiceObj['movieTopRate'] = movie_list
@@ -136,7 +135,7 @@ def transform_dataFrame(id=None):
         if len(recommendations) > 0 :
             movie_list = []
             for index, row in recommendations.iloc[:SystemConstant.RANGE_OF_CATEGORY].iterrows():
-                movieObj = recMovieDto(row['movieId'], row['title'], row['genres'])
+                movieObj = recMovieDto(movieId=row['movieId'], title=row['title'], genres=row['genres'], fileImage=row['fileImage'])
                 movie_list.append(movieObj.toJSON())
             if len(movie_list) > 0 :
                 movieServiceObj['Recommended'] = movie_list
@@ -146,7 +145,7 @@ def transform_dataFrame(id=None):
                 movie_list_filter_genres = get_movies_classify_by_prediction(genres, recommendations, SystemConstant.RANGE_OF_CATEGORY)
                 if(len(movie_list_filter_genres) > 17):
                     for index, row in movie_list_filter_genres.iterrows():
-                        movieObj = recMovieDto(row['movieId'], row['title'], row['genres'])
+                        movieObj = recMovieDto(movieId=row['movieId'], title=row['title'], genres=row['genres'], fileImage=row['fileImage'])
 #                         movieServiceObj[genres] = {
 #                             movieObj.get_title() : movieObj
 #                         }
@@ -162,7 +161,7 @@ def transform_dataFrame(id=None):
         if len(movies_top) > 0 :
             movie_list = []
             for index, row in movies_top.iterrows():
-                movieObj = recMovieDto(row['movieId'], row['title'], row['genres'], row['rating'])
+                movieObj = recMovieDto(movieId=row['movieId'], title=row['title'], genres=row['genres'], fileImage=row['fileImage'])
                 movie_list.append(movieObj.toJSON())
             movieServiceObj['movieTopRate'] = movie_list
         for genres in SystemConstant.GENRES:
@@ -170,28 +169,47 @@ def transform_dataFrame(id=None):
                 movie_list_filter_genres = get_movies_classify_by_prediction(genres, movies_top, SystemConstant.RANGE_OF_CATEGORY)
                 if(len(movie_list_filter_genres) > 17):
                     for index, row in movie_list_filter_genres.iterrows():
-                        movieObj = recMovieDto(row['movieId'], row['title'], row['genres'])
+                        movieObj = recMovieDto(movieId=row['movieId'], title=row['title'], genres=row['genres'], fileImage=row['fileImage'])
                         movie_list.append(movieObj.toJSON())
                 if len(movie_list) > 0 :
                     movieServiceObj[genres] = movie_list    
         return movieServiceObj
 
 def get_all_movie():
-    movies = db['movies']
+    movies = db.movies.find({})
     movieList = []
-    cursor = movies.find({})
-    for value in cursor:
-        movieDto = recMovieDto(movieId=value['movieId'],title=value['title'],genres=value['genres'])
+    for value in movies:
+        if value['fileImage']:
+            print(value['fileImage'])
+        movieDto = recMovieDto(movieId=value['movieId']
+                               , title=value['title']
+                               , genres=value['genres']
+                               , fileImage= value['fileImage'] if value['fileImage'] else None)
         movieList.append(movieDto.to_JSON_DataTable())
     return movieList
+ 
+get_all_movie()
+
+
+def search_by_string(searchString):
+    result =  db.movies.find({"title":{"$regex": u""+searchString}}).limit(20)
+    movie_list = []
+    for cursor in result:
+        movieObj = recMovieDto(movieId=cursor['movieId']
+                    , title=cursor['title']
+                    , genres=cursor['genres']
+                    , fileImage=cursor['fileImage'])
+        movie_list.append(movieObj.to_JSON_DataTable())
+    return movie_list
 
 def update_movie(movieContext):
-    db['movies'].find_one_and_update({'movieId':movieContext['movieId']}, {'$set': {'title': movieContext['title'], 'genres': movieContext['genres']}})
+    db['movies'].find_one_and_update({'movieId':movieContext['movieId']}, {'$set': {'title': movieContext['title'], 'genres': movieContext['genres'], 'fileImage': movieContext['fileImage']}})
     movie = db['movies'].find_one({'movieId' : movieContext['movieId']})
     movieObjDto = recMovieDto(movieId=movie['movieId']
                               , title=movie['title']
                               , genres=movie['genres']
-                              , rating=None)
+                              , rating=None
+                              , fileImage=['fileImage'])
     return movieObjDto
 
 def add_rating(ratedContext):
@@ -240,11 +258,11 @@ def create_new_movie(movie_data):
         movieId = ''
         for cursor in movieGetMax:
             movieId = int(cursor['movieId'])+1
-        movieObjRepo = movieServiceRepository(movieId=movieId, title=movie_data['title'], genres=movie_data['genres'])
+        movieObjRepo = movieServiceRepository(movieId=movieId, title=movie_data['title'], genres=movie_data['genres'], fileImage=movie_data['fileImage'])
         db.movies.insert_one(movieObjRepo.to_JSON())
         movieObj = db['movies'].find_one({'movieId' : movieId})
         print(movieObj)
-        movieServiceObj = recMovieDto(movieId=movieObj['movieId'], title=movieObj['title'], genres=movieObj['genres'], rating=None)
+        movieServiceObj = recMovieDto(movieId=movieObj['movieId'], title=movieObj['title'], genres=movieObj['genres'], rating=None, fileImage=movie_data['fileImage'])
         return movieServiceObj
     else:
         return check_duplicate_movie(title=movie_data['title'],language=movie_data['language'])
@@ -257,5 +275,4 @@ def data_test():
     }
 
 # print(create_new_movie(data_test()))
-# movies_top = transform_dataFrame(6)
-# print(movies_top)
+# movies_top = transform_dataFrame(1)

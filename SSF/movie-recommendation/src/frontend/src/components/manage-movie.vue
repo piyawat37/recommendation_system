@@ -158,6 +158,9 @@
 							        </b-row>
 							      </b-form-checkbox-group>
 							    </b-form-group>
+							    <b-form-group class="text-left">
+							    	<input type="file" ref="imageUpdate" accept="image/*" @change="onFlieSelected($event)"/>
+							    </b-form-group>
 				           		<div slot="modal-footer" class="w-100">
 						       		 <b-row>
 						       		 	<b-col lg="6" md="12" cols="12">
@@ -256,6 +259,9 @@
 							        </b-row>
 							      </b-form-checkbox-group>
 							    </b-form-group>
+							    <b-form-group>
+							    	<input type="file" accept="image/*" @change="onFlieSelected($event)" id="file-input">
+							    </b-form-group>
 				           		<div slot="modal-footer" class="w-100">
 						       		 <b-row>
 						       		 	<b-col cols="12" class="text-right">
@@ -293,8 +299,10 @@ export default {
   		title: '',
   		genresList: [],
   		genres: '',
+  		fileImage: '',
   		language: this.language
   	  },
+  	  selectedFile: ''
     }
   },
   computed: {
@@ -331,7 +339,9 @@ export default {
       vm.movieInfo.title = `Row index: ${index}`
    	  var content = JSON.stringify(item, null, 2)
       vm.movieInfo.content = JSON.parse(content)
-      vm.movieInfo.content.genresList = vm.movieInfo.content.genres.split("|") 
+      vm.movieInfo.content.genresList = vm.movieInfo.content.genres.split("|")
+      //FilePath
+      vm.movieInfo.content.filePath = configService.imagePath + vm.movieInfo.content.fileImage
       vm.$root.$emit('bv::show::modal', 'movieInfo', button)
     },
     resetModal () {
@@ -391,6 +401,8 @@ export default {
     },
     handleEditOk (movieContext){
     	var vm = this;
+    	const fileUpload = new FormData();
+    	
     	movieContext.language = vm.language
     	var strGenres = ''
    		var symbol = '|'
@@ -403,6 +415,10 @@ export default {
 	    			strGenres += symbol
 	    		}
 	    	})
+	    	if(vm.selectedFile){
+		    	fileUpload.set('fileImage', vm.selectedFile, vm.selectedFile.name)
+			   	movieContext.fileImage = vm.selectedFile.name;
+	    	}
 	    	movieContext.genres = strGenres
    			vm.$http.post(configService.movieService + '/update', movieContext).then(response => {
    	         	var movie = response.body.movie
@@ -412,6 +428,12 @@ export default {
    	         	vm.$swal('Success!', content, 'success')
    	         	vm.resetModal()
    	        	vm.getAllMovie(vm)
+   	        	if(vm.selectedFile){
+   	        		vm.$http.post(configService.movieService + '/upload', fileUpload).then(res => {
+   	        		}, response => {
+   	    	        	vm.$swal('Error!', response.bodyText, 'error')
+   	    	        });
+   		    	}
    	         	// Redirect to a specified route
    	         }, response => {
    	        	vm.$swal('Error!', response.bodyText, 'error')
@@ -426,6 +448,11 @@ export default {
     },
     handleCreateMovie (){
     	var vm = this
+    	const fileUpload = new FormData();
+    	if(vm.selectedFile){
+	    	fileUpload.set('fileImage', vm.selectedFile, vm.selectedFile.name)
+    		vm.createMovie.fileImage = vm.selectedFile.name;
+    	}
     	vm.createMovie.language = vm.language
    		var strGenres = ''
    		var symbol = '|'
@@ -439,15 +466,21 @@ export default {
 	    	})
 	    	vm.createMovie.genres = strGenres
     		vm.$http.post(configService.movieService + '/createMovie', vm.createMovie).then(response => {
-             	var movie = response.body.movie
-             	var content = "Movie "
-             	content += movie.title
-             	content += ' ['+movie.genres+']'
-             	content += " created."
-             	this.$swal('Success!', content, 'success')
-             	vm.getAllMovie(vm)
-              	vm.clearCreateMovie()
-             	// Redirect to a specified route
+	    		vm.$http.post(configService.movieService + '/upload', fileUpload).then(res => {
+	    			var movie = response.body.movie
+	             	var content = "Movie "
+	             	content += movie.title
+	             	content += ' ['+movie.genres+']'
+	             	content += " created."
+	             	this.$swal('Success!', content, 'success')
+	             	vm.getAllMovie(vm)
+	              	vm.clearCreateMovie()
+	             	// Redirect to a specified route
+	    		}, res => {
+	          	  	this.$swal('Error!', response.bodyText, 'error')
+	          	  	vm.getAllMovie(vm)
+	         		console.log(response.statusText)
+	             });
              }, response => {
           	  	this.$swal('Error!', response.bodyText, 'error')
           	  	vm.getAllMovie(vm)
@@ -462,6 +495,10 @@ export default {
     	vm.createMovie = {'title': '', 'genres': '', 'genresList' : []}
  	   	vm.$root.$emit('bv::hide::modal', 'createMovie')
  	   	vm.$v.$reset()
+    },
+    onFlieSelected(event){
+    	var vm = this;
+    	vm.selectedFile = event.target.files[0]
     }
   },
   beforeCreate() {

@@ -1,5 +1,6 @@
 {
 	"commonService" : "http://localhost:4996/common-service",
 	"movieService" : "http://localhost:4996/movie-service",
-	"userService" : "http://localhost:4996/user-service"
+	"userService" : "http://localhost:4996/user-service",
+	"imagePath" : "D:/_Project/GitHub/recommendation_system/SSF/movie-recommendation/src/frontend/src/assets/storage/movies/images/"
 }

@@ -3,7 +3,7 @@
 		<transition-group name="movie-fade" appear mode="out-in">
 			<div v-for="value, key in movieList" v-if="key == 'movieTopRate'" v-bind:key="key" style="text-align: left; margin-top: 15px">
 				<label class="control-label">
-					<span v-text="uiLabel.movieTopList"></span>
+					<h3><span v-text="uiLabel.movieTopList"></span></h3>
 				</label>
 				<Slider v-bind:id="key" v-bind:data-list="value"/>
 			</div>
@@ -11,7 +11,7 @@
 		<transition-group name="movie-fade" appear mode="out-in">
 			<div v-for="value, key in movieList" v-if="key == 'Recommended'" v-bind:key="key" style="text-align: left; margin-top: 15px">
 				<label class="control-label">
-					<span v-text="uiLabel.recommended"></span>
+					<h3><span v-text="uiLabel.recommended"></span></h3>
 				</label>
 				<Slider v-bind:id="key" v-bind:data-list="value"/>
 			</div>
@@ -19,7 +19,7 @@
 		<transition-group name="movie-fade" appear mode="out-in">
 			<div v-for="value, key in movieList" v-if="key != 'movieTopRate' && key != 'Recommended'" v-bind:key="key" style="text-align: left; margin-top: 15px">
 				<label class="control-label">
-					<span v-text="key"></span>
+					<h3><span v-text="key"></span></h3>
 				</label>
 				<Slider v-bind:id="key" v-bind:data-list="value"/>
 			</div>

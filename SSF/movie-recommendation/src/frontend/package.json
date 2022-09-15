@@ -16,7 +16,7 @@
     "@fortawesome/vue-fontawesome": "0.0.22",
     "authentication": "0.0.4",
     "axios": "^0.17.1",
-    "bootstrap": "^4.1.0",
+    "bootstrap": "^4.3.1",
     "bootstrap-vue": "^2.0.0-rc.6",
     "cors": "^2.8.4",
     "cryptojslib": "^3.1.2",
